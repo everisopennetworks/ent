@@ -2475,3 +2475,22 @@ func TestSelector_SelectedColumn(t *testing.T) {
 		require.Equal(t, []string{`"t2"."e"`, "t2.e", `"t1"."e"`, "t1.e", "e"}, s.FindSelection("e"))
 	})
 }
+
+func TestColumnsRegex(t *testing.T) {
+	t.Run("MySQL", func(t *testing.T) {
+		query, _ := Dialect(dialect.MySQL).
+			Select("*").From(Table("t1")).Where(Regex("a", "b")).Query()
+		require.Equal(t, "SELECT * FROM `t1` WHERE `a` REGEX ?", query)
+	})
+	t.Run("Postgres", func(t *testing.T) {
+		query, _ := Dialect(dialect.Postgres).
+			Select("*").From(Table("t1")).Where(Regex("a", "b")).Query()
+		require.Equal(t, `SELECT * FROM "t1" WHERE "a" ~ $1`, query)
+	})
+	t.Run("SQLite", func(t *testing.T) {
+		query, args := Dialect(dialect.SQLite).
+			Select("*").From(Table("t1")).Where(Regex("a", "b")).Query()
+		require.Equal(t, "SELECT * FROM `t1` WHERE `a` REGEXP ?", query)
+		require.Equal(t, []any{`\`}, args)
+	})
+}
