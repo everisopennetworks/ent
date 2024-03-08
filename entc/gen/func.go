@@ -11,6 +11,7 @@ import (
 	"go/token"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -55,6 +56,7 @@ var (
 		"indirect":      indirect,
 		"hasPrefix":     strings.HasPrefix,
 		"hasSuffix":     strings.HasSuffix,
+		"regex":         regex,
 		"trimPackage":   trimPackage,
 		"xtemplate":     xtemplate,
 		"hasTemplate":   hasTemplate,
@@ -94,6 +96,11 @@ func joinWords(words []string, maxSize int) string {
 		n += len(w) + 1
 	}
 	return b.String()
+}
+
+// regex applies the regular expression regex to the input string and returns the results.
+func regex(s string, regex *regexp.Regexp) []string {
+	return regex.FindAllString(s, -1)
 }
 
 // quote only strings.

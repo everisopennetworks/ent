@@ -63,6 +63,7 @@ const (
 	FuncHasPrefix    Func = "has_prefix"    // startingWith
 	FuncHasSuffix    Func = "has_suffix"    // endingWith
 	FuncHasEdge      Func = "has_edge"      // HasEdge
+	FuncRegex        Func = "regex"         // regex
 )
 
 type (
@@ -292,6 +293,14 @@ func FieldEqualFold(name, v string) P {
 	return &CallExpr{
 		Func: FuncEqualFold,
 		Args: []Expr{&Field{Name: name}, &Value{V: v}},
+	}
+}
+
+// FieldEqualFold returns a predicate to check if the field is equal to the given string under case-folding.
+func Regex(name, pattern string) P {
+	return &CallExpr{
+		Func: FuncRegex,
+		Args: []Expr{&Field{Name: name}, &Value{V: pattern}},
 	}
 }
 
