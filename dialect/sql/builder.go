@@ -1807,7 +1807,7 @@ func (p *Predicate) Regex(col, pattern string) *Predicate {
 		w, escaped := escape(pattern)
 		switch b.dialect {
 		case dialect.MySQL:
-			b.Ident(col).WriteString(" REGEX ")
+			b.Ident(col).WriteString(" REGEXP ")
 			b.Arg(w)
 		case dialect.Postgres:
 			b.Ident(col).WriteString(" ~ ")
