@@ -1805,6 +1805,8 @@ func Regex(col, pattern string) *Predicate { return P().Regex(col, pattern) }
 func (p *Predicate) Regex(col, pattern string) *Predicate {
 	return p.Append(func(b *Builder) {
 		w, escaped := escape(pattern)
+		fmt.Println("pattern: ", pattern)
+		fmt.Println("w: ", w)
 		switch b.dialect {
 		case dialect.MySQL:
 			fmt.Println("Entro al dialecto de SQL con los valores: ")
