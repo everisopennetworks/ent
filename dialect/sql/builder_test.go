@@ -2480,8 +2480,14 @@ func TestColumnsRegex(t *testing.T) {
 	t.Run("MySQL", func(t *testing.T) {
 		query, _ := Dialect(dialect.MySQL).
 			Select("*").From(Table("t1")).Where(Regex("a", "b")).Query()
-		require.Equal(t, "SELECT * FROM `t1` WHERE `a` REGEX ?", query)
+		require.Equal(t, "SELECT * FROM `t1` WHERE `a` REGEXP ?", query)
 	})
+
+	t.Run("MySQL", func(t *testing.T) {
+		Dialect(dialect.MySQL).
+			Select("*").From(Table("t1")).Where(ContainsFold("column", "algo")).Query()
+	})
+
 	t.Run("Postgres", func(t *testing.T) {
 		query, _ := Dialect(dialect.Postgres).
 			Select("*").From(Table("t1")).Where(Regex("a", "b")).Query()

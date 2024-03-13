@@ -169,9 +169,11 @@ func FieldContainsFold(name string, substr string) func(*Selector) {
 }
 
 // FieldsRegex returns a raw predicate to checks if field match with the pattern.
-func FieldRegex(field, pattern string) func(*Selector) {
+func FieldRegex(name string, pattern string) func(*Selector) {
+	fmt.Println("mi valor name es: ", name)
+	fmt.Println("mi valor pattern es: ", pattern)
 	return func(s *Selector) {
-		s.Where(Regex(s.C(field), s.C(pattern)))
+		s.Where(Regex(s.C(name), s.C(pattern)))
 	}
 }
 
