@@ -1807,20 +1807,44 @@ func (p *Predicate) Regex(col, pattern string) *Predicate {
 		w, escaped := escape(pattern)
 		switch b.dialect {
 		case dialect.MySQL:
+			fmt.Println("Entro al dialecto de SQL con los valores: ")
+			fmt.Println("B SQL: ", b)
+			fmt.Println("col SQL: ", col)
+			fmt.Println("w SQL: ", w)
 			b.Ident(col).WriteString(" REGEXP ")
 			b.Arg(w)
+			fmt.Println("B2 SQL: ", b)
+			fmt.Println("col2 SQL: ", col)
+			fmt.Println("w2 SQL: ", w)
 		case dialect.Postgres:
+			fmt.Printf("Entro al dialecto de Postgress con los valores: ")
+			fmt.Println("B Postgress: ", b)
+			fmt.Println("col Postgress: ", col)
+			fmt.Println("w Postgress: ", w)
 			b.Ident(col).WriteString(" ~ ")
 			b.Arg(w)
+			fmt.Println("B2 Postgress: ", b)
+			fmt.Println("col2 Postgress: ", col)
+			fmt.Println("w2 Postgress: ", w)
 		default: // SQLite.
+			fmt.Printf("Entro al dialecto de SQLite con los valores: ")
 			var f Func
 			f.SetDialect(b.dialect)
 			f.Ident(col)
+			fmt.Println("B SQLite: ", b)
+			fmt.Println("col SQLite: ", col)
+			fmt.Println("f SQLite: ", f)
+			fmt.Println("w SQLite: ", w)
+
 			b.WriteString(f.String()).WriteString(" REGEXP ")
 			b.Arg(w)
 			if escaped {
 				p.WriteString(" ESCAPE ").Arg("\\")
 			}
+			fmt.Println("B2 SQLite: ", b)
+			fmt.Println("col2 SQLite: ", col)
+			fmt.Println("f2 SQLite: ", f)
+			fmt.Println("w2 SQLite: ", w)
 		}
 	})
 }
