@@ -1776,6 +1776,8 @@ func ContainsFold(col, sub string) *Predicate { return P().ContainsFold(col, sub
 func (p *Predicate) ContainsFold(col, substr string) *Predicate {
 	return p.Append(func(b *Builder) {
 		w, escaped := escape(substr)
+		fmt.Println("pattern CONTAINS: ", substr)
+		fmt.Println("w: CONTAINS", w)
 		switch b.dialect {
 		case dialect.MySQL:
 			// We assume the CHARACTER SET is configured to utf8mb4,
