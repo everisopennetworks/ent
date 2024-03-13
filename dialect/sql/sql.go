@@ -174,7 +174,7 @@ func FieldRegex(field, pattern string) func(*Selector) {
 	fmt.Println("mi valor pattern es: ", pattern)
 	return func(s *Selector) {
 		fmt.Println("mi valor WHERE es: ", s.Where(Regex(s.C(field), pattern)))
-		s.Where(Regex(s.C(field), s.C(pattern)))
+		s.Where(Regex(s.C(field), pattern))
 	}
 }
 
