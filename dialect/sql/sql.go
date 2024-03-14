@@ -168,6 +168,13 @@ func FieldContainsFold(name string, substr string) func(*Selector) {
 	}
 }
 
+// FieldsRegex returns a raw predicate to checks if field match with the pattern.
+func FieldRegex(field, pattern string) func(*Selector) {
+	return func(s *Selector) {
+		s.Where(Regex(s.C(field), pattern))
+	}
+}
+
 // ColumnCheck is a function that verifies whether the
 // specified column exists within the given table.
 type ColumnCheck func(table, column string) error
