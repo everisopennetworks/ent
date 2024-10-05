@@ -1825,6 +1825,77 @@ func (p *Predicate) Regex(col, pattern string) *Predicate {
 	})
 }
 
+// Match is a helper predicate that checks a pattern using the Match predicate.
+func Match(col, pattern string) *Predicate { return P().Match(col, pattern) }
+
+// Match is a helper predicate that applies the Match predicate.
+func (p *Predicate) Match(col, pattern string) *Predicate {
+	return p.Append(func(b *Builder) {
+		w, escaped := escape(pattern)
+		switch b.dialect {
+		case dialect.MySQL, dialect.Postgres:
+			b.Ident(MatchF(col))
+			b.WriteOp(OpAgainst)
+			b.Wrap(func(b *Builder) {
+				b.Args(w)
+			})
+		default: // SQLite.
+			var f Func
+			f.SetDialect(b.dialect)
+			f.Ident(col)
+			b.WriteString(f.String()).WriteString(" MATCH ")
+			b.Arg(w)
+			if escaped {
+				p.WriteString(" ESCAPE ").Arg("\\")
+			}
+		}
+	})
+}
+
+/*
+// In appends the `IN` predicate.
+func (p *Predicate) In2(col string, args ...any) *Predicate {
+	// If no arguments were provided, append the FALSE constant, since
+	// we cannot apply "IN ()". This will make this predicate falsy.
+	if len(args) == 0 {
+		return p.False()
+	}
+	return p.Append(func(b *Builder) {
+		b.Ident(col).WriteOp(OpAgainst)
+		b.Wrap(func(b *Builder) {
+			if s, ok := args[0].(*Selector); ok {
+				b.Join(s)
+			} else {
+				b.Args(args...)
+			}
+		})
+	})
+}
+*/
+// Match wraps the ident with the MATCH function.
+func MatchF(ident string) string {
+	f := &Func{}
+	f.Match(ident)
+	return f.String()
+}
+
+// Match wraps the ident with the Match function.
+func (f *Func) Match(ident string) {
+	f.byName("MATCH", ident)
+}
+
+// Against wraps the ident with the AGAINST function.
+func AgainstF(ident string) string {
+	f := &Func{}
+	f.Against(ident)
+	return f.String()
+}
+
+// Against wraps the ident with the AGAINST function.
+func (f *Func) Against(ident string) {
+	f.byName("AGAINST", ident)
+}
+
 // CompositeGT returns a composite ">" predicate
 func CompositeGT(columns []string, args ...any) *Predicate {
 	return P().CompositeGT(columns, args...)
@@ -3546,6 +3617,7 @@ const (
 	OpLTE               // <=
 	OpIn                // IN
 	OpNotIn             // NOT IN
+	OpAgainst           // AGAINST
 	OpLike              // LIKE
 	OpIsNull            // IS NULL
 	OpNotNull           // IS NOT NULL
@@ -3565,6 +3637,7 @@ var ops = [...]string{
 	OpLTE:     "<=",
 	OpIn:      "IN",
 	OpNotIn:   "NOT IN",
+	OpAgainst: "AGAINST",
 	OpLike:    "LIKE",
 	OpIsNull:  "IS NULL",
 	OpNotNull: "IS NOT NULL",

@@ -64,6 +64,7 @@ const (
 	FuncHasSuffix    Func = "has_suffix"    // endingWith
 	FuncHasEdge      Func = "has_edge"      // HasEdge
 	FuncRegex        Func = "regex"         // regex
+	FuncMatch        Func = "match"         // match
 )
 
 type (
@@ -316,6 +317,14 @@ func FieldHasSuffix(name, suffix string) P {
 func Regex(name, pattern string) P {
 	return &CallExpr{
 		Func: FuncRegex,
+		Args: []Expr{&Field{Name: name}, &Value{V: pattern}},
+	}
+}
+
+// Match returns a raw predicate to checks if field match with the pattern.
+func Match(name, pattern string) P {
+	return &CallExpr{
+		Func: FuncMatch,
 		Args: []Expr{&Field{Name: name}, &Value{V: pattern}},
 	}
 }
