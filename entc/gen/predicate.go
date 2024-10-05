@@ -25,6 +25,7 @@ const (
 	HasPrefix              // startingWith
 	HasSuffix              // endingWith
 	Regex                  // Regex
+	Match                  // Match
 )
 
 // Name returns the string representation of an operator.
@@ -62,6 +63,7 @@ var (
 		HasPrefix:    "HasPrefix",
 		HasSuffix:    "HasSuffix",
 		Regex:        "Regex",
+		Match:        "Match",
 		In:           "In",
 		NotIn:        "NotIn",
 	}
@@ -69,6 +71,6 @@ var (
 	boolOps     = []Op{EQ, NEQ}
 	enumOps     = append(boolOps, In, NotIn)
 	numericOps  = append(enumOps, GT, GTE, LT, LTE)
-	stringOps   = append(numericOps, Contains, HasPrefix, HasSuffix, Regex)
+	stringOps   = append(numericOps, Contains, HasPrefix, HasSuffix, Regex, Match)
 	nillableOps = []Op{IsNil, NotNil}
 )

@@ -58,6 +58,11 @@ func Regex(regex string) *dsl.Traversal {
 	return op("regex", regex)
 }
 
+// Match is the fulltext pattern string test predicate.
+func Match(substr string) *dsl.Traversal {
+	return op("match", substr)
+}
+
 // Containing is the sub string test predicate.
 func Containing(substr string) *dsl.Traversal {
 	return op("containing", substr)

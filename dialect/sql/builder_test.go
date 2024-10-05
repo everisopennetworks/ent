@@ -2494,3 +2494,24 @@ func TestColumnsRegex(t *testing.T) {
 		require.Equal(t, []any{`\`}, args)
 	})
 }
+
+func TestColumnsMatch(t *testing.T) {
+	t.Run("MySQL", func(t *testing.T) {
+		query, _ := Dialect(dialect.MySQL).
+			Select("*").From(Table("t1")).Where(Match("a", "b")).Query()
+		//fmt.Print("query match=", query)
+		require.Equal(t, "SELECT * FROM `t1` WHERE MATCH(`a`) AGAINST (?)", query)
+
+	})
+	/*t.Run("Postgres", func(t *testing.T) {
+		query, _ := Dialect(dialect.Postgres).
+			Select("*").From(Table("t1")).Where(Match("a", "b")).Query()
+		require.Equal(t, `SELECT * FROM "t1" WHERE "a" ~ $1`, query)
+	})
+	t.Run("SQLite", func(t *testing.T) {
+		query, args := Dialect(dialect.SQLite).
+			Select("*").From(Table("t1")).Where(Match("a", "b")).Query()
+		require.Equal(t, "SELECT * FROM `t1` WHERE `a` MATCH ?", query)
+		require.Equal(t, []any{`\`}, args)
+	})*/
+}
