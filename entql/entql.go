@@ -62,6 +62,7 @@ const (
 	FuncContainsFold Func = "contains_fold" // containing case-insensitive
 	FuncHasPrefix    Func = "has_prefix"    // startingWith
 	FuncHasSuffix    Func = "has_suffix"    // endingWith
+	FuncRegex        Func = "regex"         // regex
 	FuncHasEdge      Func = "has_edge"      // HasEdge
 )
 
@@ -308,6 +309,14 @@ func FieldHasSuffix(name, suffix string) P {
 	return &CallExpr{
 		Func: FuncHasSuffix,
 		Args: []Expr{&Field{Name: name}, &Value{V: suffix}},
+	}
+}
+
+// Regex returns a raw predicate to checks if field match with the pattern.
+func Regex(name, pattern string) P {
+	return &CallExpr{
+		Func: FuncRegex,
+		Args: []Expr{&Field{Name: name}, &Value{V: pattern}},
 	}
 }
 

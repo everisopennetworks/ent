@@ -58,6 +58,11 @@ func Containing(substr string) *dsl.Traversal {
 	return op("containing", substr)
 }
 
+// Regex is the match pattern string test predicate.
+func Regex(regex string) *dsl.Traversal {
+	return op("regex", regex)
+}
+
 // NotStartingWith is the negation of StartingWith.
 func NotStartingWith(prefix string) *dsl.Traversal {
 	return op("notStartingWith", prefix)

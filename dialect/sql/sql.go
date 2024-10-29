@@ -191,6 +191,13 @@ func FieldContainsFold(name string, substr string) func(*Selector) {
 	}
 }
 
+// FieldsRegex returns a raw predicate to checks if field match with the pattern.
+func FieldRegex(field, pattern string) func(*Selector) {
+	return func(s *Selector) {
+		s.Where(Regex(s.C(field), pattern))
+	}
+}
+
 // AndPredicates returns a new predicate for joining multiple generated predicates with AND between them.
 func AndPredicates[P ~func(*Selector)](predicates ...P) func(*Selector) {
 	return func(s *Selector) {
