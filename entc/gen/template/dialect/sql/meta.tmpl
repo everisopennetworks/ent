@@ -116,6 +116,12 @@ func ValidColumn(column string) bool {
 				}
 			}
 		{{- else }}
+			// {{ $e.OrderFieldNonUniqueName }} orders the results by {{ $e.Name }} field.
+			func {{ $e.OrderFieldNonUniqueName }}(field string, opts ...sql.OrderTermOption) OrderOption {
+				return func(s *sql.Selector) {
+					sqlgraph.OrderByNeighborTerms(s, new{{ pascal $e.Name }}Step(), sql.OrderByField(field, opts...))
+				}
+			}
 			// {{ $e.OrderCountName }} orders the results by {{ $e.Name }} count.
 			func {{ $e.OrderCountName }}(opts ...sql.OrderTermOption) OrderOption {
 				return func(s *sql.Selector) {
