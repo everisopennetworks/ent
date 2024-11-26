@@ -1996,7 +1996,7 @@ func (e Edge) OrderTermsName() (string, error) {
 // OrderFieldName returns the function/option name for ordering by edge field.
 func (e Edge) OrderFieldName() (string, error) {
 	if !e.Unique {
-		return OrderFieldNonUniqueName()
+		return e.OrderFieldNonUniqueName()
 	}
 	return fmt.Sprintf("By%sField", pascal(e.Name)), nil
 }
