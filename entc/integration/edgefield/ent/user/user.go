@@ -122,6 +122,13 @@ func BySpouseID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSpouseID, opts...).ToFunc()
 }
 
+// ByPetsField orders the results by pets field.
+func ByPetsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPetsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByPetsCount orders the results by pets count.
 func ByPetsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -140,6 +147,13 @@ func ByPets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 func ByParentField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newParentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByChildrenField orders the results by children field.
+func ByChildrenField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newChildrenStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -178,6 +192,13 @@ func ByMetadataField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByInfoField orders the results by info field.
+func ByInfoField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInfoStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByInfoCount orders the results by info count.
 func ByInfoCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -189,6 +210,13 @@ func ByInfoCount(opts ...sql.OrderTermOption) OrderOption {
 func ByInfo(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newInfoStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByRentalsField orders the results by rentals field.
+func ByRentalsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRentalsStep(), sql.OrderByField(field, opts...))
 	}
 }
 

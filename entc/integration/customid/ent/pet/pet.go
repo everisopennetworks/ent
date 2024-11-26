@@ -105,6 +105,13 @@ func ByOwnerField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByCarsField orders the results by cars field.
+func ByCarsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCarsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByCarsCount orders the results by cars count.
 func ByCarsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -116,6 +123,13 @@ func ByCarsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByCars(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newCarsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFriendsField orders the results by friends field.
+func ByFriendsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFriendsStep(), sql.OrderByField(field, opts...))
 	}
 }
 

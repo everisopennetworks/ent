@@ -92,6 +92,13 @@ func ByValue(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldValue, opts...).ToFunc()
 }
 
+// ByTweetsField orders the results by tweets field.
+func ByTweetsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTweetsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByTweetsCount orders the results by tweets count.
 func ByTweetsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -103,6 +110,13 @@ func ByTweetsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByTweets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newTweetsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByGroupsField orders the results by groups field.
+func ByGroupsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGroupsStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -120,6 +134,13 @@ func ByGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByTweetTagsField orders the results by tweet_tags field.
+func ByTweetTagsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTweetTagsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByTweetTagsCount orders the results by tweet_tags count.
 func ByTweetTagsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -131,6 +152,13 @@ func ByTweetTagsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByTweetTags(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newTweetTagsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByGroupTagsField orders the results by group_tags field.
+func ByGroupTagsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGroupTagsStep(), sql.OrderByField(field, opts...))
 	}
 }
 

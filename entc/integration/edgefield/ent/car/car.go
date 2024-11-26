@@ -66,6 +66,13 @@ func ByNumber(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNumber, opts...).ToFunc()
 }
 
+// ByRentalsField orders the results by rentals field.
+func ByRentalsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRentalsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByRentalsCount orders the results by rentals count.
 func ByRentalsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

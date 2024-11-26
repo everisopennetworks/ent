@@ -92,6 +92,13 @@ func BySpouseField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByFollowersField orders the results by followers field.
+func ByFollowersField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowersStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByFollowersCount orders the results by followers count.
 func ByFollowersCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -103,6 +110,13 @@ func ByFollowersCount(opts ...sql.OrderTermOption) OrderOption {
 func ByFollowers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newFollowersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFollowingField orders the results by following field.
+func ByFollowingField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowingStep(), sql.OrderByField(field, opts...))
 	}
 }
 

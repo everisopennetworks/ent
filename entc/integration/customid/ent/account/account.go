@@ -68,6 +68,13 @@ func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
 }
 
+// ByTokenField orders the results by token field.
+func ByTokenField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTokenStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByTokenCount orders the results by token count.
 func ByTokenCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

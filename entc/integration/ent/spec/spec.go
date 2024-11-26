@@ -56,6 +56,13 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
+// ByCardField orders the results by card field.
+func ByCardField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCardStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByCardCount orders the results by card count.
 func ByCardCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

@@ -89,6 +89,13 @@ func ByAuthorField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByCommentsField orders the results by comments field.
+func ByCommentsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCommentsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByCommentsCount orders the results by comments count.
 func ByCommentsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

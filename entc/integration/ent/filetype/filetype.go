@@ -131,6 +131,13 @@ func ByState(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldState, opts...).ToFunc()
 }
 
+// ByFilesField orders the results by files field.
+func ByFilesField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFilesStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByFilesCount orders the results by files count.
 func ByFilesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

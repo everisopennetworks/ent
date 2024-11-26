@@ -94,6 +94,13 @@ func ByAge(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAge, opts...).ToFunc()
 }
 
+// ByTeamsField orders the results by teams field.
+func ByTeamsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTeamsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByTeamsCount orders the results by teams count.
 func ByTeamsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -105,6 +112,13 @@ func ByTeamsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByTeams(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newTeamsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTasksField orders the results by tasks field.
+func ByTasksField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTasksStep(), sql.OrderByField(field, opts...))
 	}
 }
 

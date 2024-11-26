@@ -73,6 +73,13 @@ func ByMaxUsers(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMaxUsers, opts...).ToFunc()
 }
 
+// ByGroupsField orders the results by groups field.
+func ByGroupsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGroupsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByGroupsCount orders the results by groups count.
 func ByGroupsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

@@ -150,6 +150,13 @@ func ByUUID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUUID, opts...).ToFunc()
 }
 
+// ByTeamsField orders the results by teams field.
+func ByTeamsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTeamsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByTeamsCount orders the results by teams count.
 func ByTeamsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

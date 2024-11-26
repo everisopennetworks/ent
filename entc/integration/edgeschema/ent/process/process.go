@@ -65,6 +65,13 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
+// ByFilesField orders the results by files field.
+func ByFilesField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFilesStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByFilesCount orders the results by files count.
 func ByFilesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -76,6 +83,13 @@ func ByFilesCount(opts ...sql.OrderTermOption) OrderOption {
 func ByFiles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newFilesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByAttachedFilesField orders the results by attached_files field.
+func ByAttachedFilesField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAttachedFilesStep(), sql.OrderByField(field, opts...))
 	}
 }
 

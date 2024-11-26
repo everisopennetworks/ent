@@ -64,6 +64,13 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
+// ByProcessesField orders the results by processes field.
+func ByProcessesField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newProcessesStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByProcessesCount orders the results by processes count.
 func ByProcessesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

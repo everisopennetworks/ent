@@ -87,6 +87,13 @@ func ByActiveSessionField(field string, opts ...sql.OrderTermOption) OrderOption
 	}
 }
 
+// BySessionsField orders the results by sessions field.
+func BySessionsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSessionsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // BySessionsCount orders the results by sessions count.
 func BySessionsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

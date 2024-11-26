@@ -140,6 +140,13 @@ func ByOwnerField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// BySpecField orders the results by spec field.
+func BySpecField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSpecStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // BySpecCount orders the results by spec count.
 func BySpecCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

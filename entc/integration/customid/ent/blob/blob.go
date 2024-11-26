@@ -112,6 +112,13 @@ func ByParentField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByLinksField orders the results by links field.
+func ByLinksField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLinksStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByLinksCount orders the results by links count.
 func ByLinksCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -123,6 +130,13 @@ func ByLinksCount(opts ...sql.OrderTermOption) OrderOption {
 func ByLinks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newLinksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByBlobLinksField orders the results by blob_links field.
+func ByBlobLinksField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBlobLinksStep(), sql.OrderByField(field, opts...))
 	}
 }
 

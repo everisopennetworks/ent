@@ -62,6 +62,13 @@ func ByOid(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOid, opts...).ToFunc()
 }
 
+// ByAdminsField orders the results by admins field.
+func ByAdminsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAdminsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByAdminsCount orders the results by admins count.
 func ByAdminsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {

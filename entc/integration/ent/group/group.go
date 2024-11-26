@@ -147,6 +147,13 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
+// ByFilesField orders the results by files field.
+func ByFilesField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFilesStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByFilesCount orders the results by files count.
 func ByFilesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -161,6 +168,13 @@ func ByFiles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByBlockedField orders the results by blocked field.
+func ByBlockedField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBlockedStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByBlockedCount orders the results by blocked count.
 func ByBlockedCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -172,6 +186,13 @@ func ByBlockedCount(opts ...sql.OrderTermOption) OrderOption {
 func ByBlocked(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newBlockedStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByUsersField orders the results by users field.
+func ByUsersField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUsersStep(), sql.OrderByField(field, opts...))
 	}
 }
 

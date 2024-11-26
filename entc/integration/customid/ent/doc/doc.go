@@ -99,6 +99,13 @@ func ByParentField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByChildrenField orders the results by children field.
+func ByChildrenField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newChildrenStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByChildrenCount orders the results by children count.
 func ByChildrenCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -110,6 +117,13 @@ func ByChildrenCount(opts ...sql.OrderTermOption) OrderOption {
 func ByChildren(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newChildrenStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByRelatedField orders the results by related field.
+func ByRelatedField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRelatedStep(), sql.OrderByField(field, opts...))
 	}
 }
 

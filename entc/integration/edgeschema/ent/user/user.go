@@ -175,6 +175,13 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
+// ByGroupsField orders the results by groups field.
+func ByGroupsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGroupsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByGroupsCount orders the results by groups count.
 func ByGroupsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -186,6 +193,13 @@ func ByGroupsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newGroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFriendsField orders the results by friends field.
+func ByFriendsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFriendsStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -203,6 +217,13 @@ func ByFriends(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByRelativesField orders the results by relatives field.
+func ByRelativesField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRelativesStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByRelativesCount orders the results by relatives count.
 func ByRelativesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -214,6 +235,13 @@ func ByRelativesCount(opts ...sql.OrderTermOption) OrderOption {
 func ByRelatives(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newRelativesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByLikedTweetsField orders the results by liked_tweets field.
+func ByLikedTweetsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLikedTweetsStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -231,6 +259,13 @@ func ByLikedTweets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByTweetsField orders the results by tweets field.
+func ByTweetsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTweetsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByTweetsCount orders the results by tweets count.
 func ByTweetsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -242,6 +277,13 @@ func ByTweetsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByTweets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newTweetsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByRolesField orders the results by roles field.
+func ByRolesField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRolesStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -259,6 +301,13 @@ func ByRoles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByJoinedGroupsField orders the results by joined_groups field.
+func ByJoinedGroupsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newJoinedGroupsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByJoinedGroupsCount orders the results by joined_groups count.
 func ByJoinedGroupsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -270,6 +319,13 @@ func ByJoinedGroupsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByJoinedGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newJoinedGroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFriendshipsField orders the results by friendships field.
+func ByFriendshipsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFriendshipsStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -287,6 +343,13 @@ func ByFriendships(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByRelationshipField orders the results by relationship field.
+func ByRelationshipField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRelationshipStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByRelationshipCount orders the results by relationship count.
 func ByRelationshipCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -298,6 +361,13 @@ func ByRelationshipCount(opts ...sql.OrderTermOption) OrderOption {
 func ByRelationship(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newRelationshipStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByLikesField orders the results by likes field.
+func ByLikesField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLikesStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -315,6 +385,13 @@ func ByLikes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByUserTweetsField orders the results by user_tweets field.
+func ByUserTweetsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUserTweetsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByUserTweetsCount orders the results by user_tweets count.
 func ByUserTweetsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -326,6 +403,13 @@ func ByUserTweetsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByUserTweets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newUserTweetsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByRolesUsersField orders the results by roles_users field.
+func ByRolesUsersField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRolesUsersStep(), sql.OrderByField(field, opts...))
 	}
 }
 

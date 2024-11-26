@@ -487,6 +487,9 @@ func OrderByNeighborTerms(q *sql.Selector, s *Step, opts ...sql.OrderTerm) {
 	)
 	switch {
 	case s.FromEdgeOwner():
+		fmt.Println("---------------------------------")
+		fmt.Println("FromEdgeOwner")
+		fmt.Println("---------------------------------")
 		toT := build.Table(s.To.Table).Schema(s.To.Schema)
 		join = build.Select(toT.C(s.To.Column)).
 			From(toT)
@@ -494,6 +497,9 @@ func OrderByNeighborTerms(q *sql.Selector, s *Step, opts ...sql.OrderTerm) {
 		q.LeftJoin(join).
 			On(q.C(s.Edge.Columns[0]), join.C(s.To.Column))
 	case s.ThroughEdgeTable():
+		fmt.Println("---------------------------------")
+		fmt.Println("ThroughEdgeTable")
+		fmt.Println("---------------------------------")
 		pk1, pk2 := s.Edge.Columns[1], s.Edge.Columns[0]
 		if s.Edge.Inverse {
 			pk1, pk2 = pk2, pk1
@@ -509,6 +515,9 @@ func OrderByNeighborTerms(q *sql.Selector, s *Step, opts ...sql.OrderTerm) {
 		q.LeftJoin(join).
 			On(q.C(s.From.Column), join.C(pk2))
 	case s.ToEdgeOwner():
+		fmt.Println("---------------------------------")
+		fmt.Println("ToEdgeOwner")
+		fmt.Println("---------------------------------")
 		toT := build.Table(s.Edge.Table).Schema(s.Edge.Schema)
 		join = build.Select(toT.C(s.Edge.Columns[0])).
 			From(toT).

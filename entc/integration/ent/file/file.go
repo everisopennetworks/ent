@@ -152,6 +152,13 @@ func ByTypeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByFieldField orders the results by field field.
+func ByFieldField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFieldStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByFieldCount orders the results by field count.
 func ByFieldCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
