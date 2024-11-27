@@ -112,14 +112,18 @@ func ValidColumn(column string) bool {
 			// {{ $e.OrderFieldName }} orders the results by {{ $e.Name }} field.
 			func {{ $e.OrderFieldName }}(field string, opts ...sql.OrderTermOption) OrderOption {
 				return func(s *sql.Selector) {
-					sqlgraph.OrderByNeighborTerms(s, new{{ pascal $e.Name }}Step(), sql.OrderByField(field, opts...))
+						{{ pascal $e.Name }}Step := new{{ pascal $e.Name }}Step()
+						{{ pascal $e.Name }}Step.Unique = true
+					sqlgraph.OrderByNeighborTerms(s, {{ pascal $e.Name }}Step, sql.OrderByField(field, opts...))
 				}
 			}
 		{{- else }}
-			// {{ $e.OrderFieldNonUniqueName }} orders the results by {{ $e.Name }} field.
-			func {{ $e.OrderFieldNonUniqueName }}(field string, opts ...sql.OrderTermOption) OrderOption {
+			// {{ $e.OrderFieldName }} orders the results by {{ $e.Name }} field.
+			func {{ $e.OrderFieldName }}(field string, opts ...sql.OrderTermOption) OrderOption {
 				return func(s *sql.Selector) {
-					sqlgraph.OrderByNeighborTerms(s, new{{ pascal $e.Name }}Step(), sql.OrderByField(field, opts...))
+						{{ pascal $e.Name }}Step := new{{ pascal $e.Name }}Step()
+						{{ pascal $e.Name }}Step.Unique = true
+					sqlgraph.OrderByNeighborTerms(s, {{ pascal $e.Name }}Step, sql.OrderByField(field, opts...))
 				}
 			}
 			// {{ $e.OrderCountName }} orders the results by {{ $e.Name }} count.
