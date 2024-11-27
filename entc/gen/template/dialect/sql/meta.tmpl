@@ -113,7 +113,7 @@ func ValidColumn(column string) bool {
 			func {{ $e.OrderFieldName }}(field string, opts ...sql.OrderTermOption) OrderOption {
 				return func(s *sql.Selector) {
 						{{ pascal $e.Name }}Step := new{{ pascal $e.Name }}Step()
-						{{ pascal $e.Name }}Step.Unique = true
+						{{ pascal $e.Name }}Step.Edge.Unique = true
 					sqlgraph.OrderByNeighborTerms(s, {{ pascal $e.Name }}Step, sql.OrderByField(field, opts...))
 				}
 			}
@@ -122,7 +122,7 @@ func ValidColumn(column string) bool {
 			func {{ $e.OrderFieldName }}(field string, opts ...sql.OrderTermOption) OrderOption {
 				return func(s *sql.Selector) {
 						{{ pascal $e.Name }}Step := new{{ pascal $e.Name }}Step()
-						{{ pascal $e.Name }}Step.Unique = true
+						{{ pascal $e.Name }}Step.Edge.Unique = false
 					sqlgraph.OrderByNeighborTerms(s, {{ pascal $e.Name }}Step, sql.OrderByField(field, opts...))
 				}
 			}
