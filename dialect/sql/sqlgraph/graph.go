@@ -69,6 +69,8 @@ type Step struct {
 	}
 	// Edge holds the edge information for getting the neighbors.
 	Edge struct {
+		// If edge is unique.
+		Unique bool
 		// Rel of the edge.
 		Rel Rel
 		// Schema is an optional name of the database
@@ -486,6 +488,13 @@ func OrderByNeighborTerms(q *sql.Selector, s *Step, opts ...sql.OrderTerm) {
 		build = sql.Dialect(q.Dialect())
 	)
 	switch {
+	case !s.Edge.Unique:
+		toT := build.Table(s.Edge.Table).Schema(s.Edge.Schema)
+		join = build.Select(toT.C(s.Edge.Columns[0])).
+			From(toT)
+		selectTerms(join, opts)
+		q.LeftJoin(join).
+			On(q.C(s.From.Column), join.C(s.Edge.Columns[0]))
 	case s.FromEdgeOwner():
 		toT := build.Table(s.To.Table).Schema(s.To.Schema)
 		join = build.Select(toT.C(s.To.Column)).

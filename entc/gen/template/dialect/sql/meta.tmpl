@@ -112,10 +112,20 @@ func ValidColumn(column string) bool {
 			// {{ $e.OrderFieldName }} orders the results by {{ $e.Name }} field.
 			func {{ $e.OrderFieldName }}(field string, opts ...sql.OrderTermOption) OrderOption {
 				return func(s *sql.Selector) {
-					sqlgraph.OrderByNeighborTerms(s, new{{ pascal $e.Name }}Step(), sql.OrderByField(field, opts...))
+						{{ pascal $e.Name }}Step := new{{ pascal $e.Name }}Step()
+						{{ pascal $e.Name }}Step.Edge.Unique = true
+					sqlgraph.OrderByNeighborTerms(s, {{ pascal $e.Name }}Step, sql.OrderByField(field, opts...))
 				}
 			}
 		{{- else }}
+			// {{ $e.OrderFieldName }} orders the results by {{ $e.Name }} field.
+			func {{ $e.OrderFieldName }}(field string, opts ...sql.OrderTermOption) OrderOption {
+				return func(s *sql.Selector) {
+						{{ pascal $e.Name }}Step := new{{ pascal $e.Name }}Step()
+						{{ pascal $e.Name }}Step.Edge.Unique = false
+					sqlgraph.OrderByNeighborTerms(s, {{ pascal $e.Name }}Step, sql.OrderByField(field, opts...))
+				}
+			}
 			// {{ $e.OrderCountName }} orders the results by {{ $e.Name }} count.
 			func {{ $e.OrderCountName }}(opts ...sql.OrderTermOption) OrderOption {
 				return func(s *sql.Selector) {
