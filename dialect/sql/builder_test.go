@@ -2500,7 +2500,7 @@ func TestColumnsMatch(t *testing.T) {
 		query, _ := Dialect(dialect.MySQL).
 			Select("*").From(Table("t1")).Where(Match("a", "b")).Query()
 		//fmt.Print("query match=", query)
-		require.Equal(t, "SELECT * FROM `t1` WHERE MATCH(`a`) AGAINST (?)", query)
+		require.Equal(t, "SELECT * FROM `t1` WHERE MATCH(`a`) AGAINST (? IN BOOLEAN MODE)", query)
 
 	})
 	/*t.Run("Postgres", func(t *testing.T) {
