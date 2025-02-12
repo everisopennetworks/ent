@@ -1837,7 +1837,7 @@ func (p *Predicate) Match(col, pattern string) *Predicate {
 			b.Ident(MatchF(col))
 			b.WriteOp(OpAgainst)
 			b.Wrap(func(b *Builder) {
-				b.Args(pattern).WriteString(" IN BOOLEAN MODE")
+				b.Args(fmt.Sprintf(`"%s"`, pattern)).WriteString(" IN BOOLEAN MODE")
 			})
 		default: // SQLite.
 			var f Func
