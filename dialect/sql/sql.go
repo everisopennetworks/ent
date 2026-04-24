@@ -7,6 +7,8 @@ package sql
 import (
 	"fmt"
 	"strings"
+
+	"entgo.io/ent/dialect"
 )
 
 // The following helpers exist to simplify the way raw predicates
@@ -165,6 +167,31 @@ func FieldContains(name string, substr string) func(*Selector) {
 func FieldContainsFold(name string, substr string) func(*Selector) {
 	return func(s *Selector) {
 		s.Where(ContainsFold(s.C(name), substr))
+	}
+}
+
+// FieldContainsJSONFold returns a raw predicate to check if the JSON field textual form contains the given substring with case-folding.
+func FieldContainsJSONFold(name string, substr string) func(*Selector) {
+	return func(s *Selector) {
+		column := s.C(name)
+		s.Where(P(func(b *Builder) {
+			w, escaped := escape(substr)
+			pattern := "%" + strings.ToLower(w) + "%"
+			switch b.Dialect() {
+			case dialect.MySQL:
+				b.WriteString("LOWER(CAST(").WriteString(column).WriteString(" AS CHAR)) LIKE ")
+				b.Arg(pattern)
+			case dialect.Postgres:
+				b.WriteString("LOWER(CAST(").WriteString(column).WriteString(" AS text)) LIKE ")
+				b.Arg(pattern)
+			default:
+				b.WriteString("LOWER(CAST(").WriteString(column).WriteString(" AS TEXT)) LIKE ")
+				b.Arg(pattern)
+				if escaped {
+					b.WriteString(" ESCAPE ").Arg("\\")
+				}
+			}
+		}))
 	}
 }
 
