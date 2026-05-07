@@ -436,10 +436,10 @@ func (_q *PetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Pet, err
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	if useIndex := pq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := pq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -541,10 +541,10 @@ func (_q *PetQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*Pe
 
 func (_q *PetQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
-	if useIndex := pq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := pq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -612,10 +612,10 @@ func (_q *PetQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	if useIndex := pq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		t1.UseIndex(useIndex...)
 	}
-	if forceIndex := pq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		t1.ForceIndex(forceIndex...)
 	}
 	for _, m := range _q.modifiers {
@@ -639,15 +639,15 @@ func (_q *PetQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // UseIndex hints which indexes to use.
-func (pq *PetQuery) UseIndex(idx ...string) *PetQuery {
-	pq.useIndex = append(pq.useIndex, idx...)
-	return pq
+func (_q *PetQuery) UseIndex(idx ...string) *PetQuery {
+	_q.useIndex = append(_q.useIndex, idx...)
+	return _q
 }
 
 // ForceIndex forces which indexes to use.
-func (pq *PetQuery) ForceIndex(idx ...string) *PetQuery {
-	pq.forceIndex = append(pq.forceIndex, idx...)
-	return pq
+func (_q *PetQuery) ForceIndex(idx ...string) *PetQuery {
+	_q.forceIndex = append(_q.forceIndex, idx...)
+	return _q
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

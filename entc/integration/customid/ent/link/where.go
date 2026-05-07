@@ -57,6 +57,11 @@ func IDLTE(id uuidc.UUIDC) predicate.Link {
 	return predicate.Link(sql.FieldLTE(FieldID, id))
 }
 
+// LinkInformationContainsFold applies the ContainsFold predicate on the "link_information" field.
+func LinkInformationContainsFold(v string) predicate.Link {
+	return predicate.Link(sql.FieldContainsJSONFold(FieldLinkInformation, v))
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Link) predicate.Link {
 	return predicate.Link(sql.AndPredicates(predicates...))

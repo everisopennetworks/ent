@@ -78,6 +78,11 @@ func NameHasSuffix(v string) predicate.ValueScan {
 	return predicate.ValueScan(sql.FieldHasSuffix(FieldName, v))
 }
 
+// NameRegex applies the Regex predicate on the "name" field.
+func NameRegex(v string) predicate.ValueScan {
+	return predicate.ValueScan(sql.FieldRegex(FieldName, v))
+}
+
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.ValueScan {
 	return predicate.ValueScan(sql.FieldEqualFold(FieldName, v))

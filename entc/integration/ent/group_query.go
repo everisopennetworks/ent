@@ -514,10 +514,10 @@ func (_q *GroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Group,
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	if useIndex := gq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := gq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -741,10 +741,10 @@ func (_q *GroupQuery) loadInfo(ctx context.Context, query *GroupInfoQuery, nodes
 
 func (_q *GroupQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
-	if useIndex := gq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := gq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -812,10 +812,10 @@ func (_q *GroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	if useIndex := gq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		t1.UseIndex(useIndex...)
 	}
-	if forceIndex := gq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		t1.ForceIndex(forceIndex...)
 	}
 	for _, m := range _q.modifiers {
@@ -839,15 +839,15 @@ func (_q *GroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // UseIndex hints which indexes to use.
-func (gq *GroupQuery) UseIndex(idx ...string) *GroupQuery {
-	gq.useIndex = append(gq.useIndex, idx...)
-	return gq
+func (_q *GroupQuery) UseIndex(idx ...string) *GroupQuery {
+	_q.useIndex = append(_q.useIndex, idx...)
+	return _q
 }
 
 // ForceIndex forces which indexes to use.
-func (gq *GroupQuery) ForceIndex(idx ...string) *GroupQuery {
-	gq.forceIndex = append(gq.forceIndex, idx...)
-	return gq
+func (_q *GroupQuery) ForceIndex(idx ...string) *GroupQuery {
+	_q.forceIndex = append(_q.forceIndex, idx...)
+	return _q
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

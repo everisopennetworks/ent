@@ -1044,6 +1044,11 @@ func RolesNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldRoles))
 }
 
+// RolesContainsFold applies the ContainsFold predicate on the "roles" field.
+func RolesContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldRoles, v))
+}
+
 // DefaultExprEQ applies the EQ predicate on the "default_expr" field.
 func DefaultExprEQ(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDefaultExpr, v))

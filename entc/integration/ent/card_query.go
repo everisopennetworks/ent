@@ -439,10 +439,10 @@ func (_q *CardQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Card, e
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	if useIndex := cq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := cq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -581,10 +581,10 @@ func (_q *CardQuery) loadSpec(ctx context.Context, query *SpecQuery, nodes []*Ca
 
 func (_q *CardQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
-	if useIndex := cq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := cq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -652,10 +652,10 @@ func (_q *CardQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	if useIndex := cq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		t1.UseIndex(useIndex...)
 	}
-	if forceIndex := cq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		t1.ForceIndex(forceIndex...)
 	}
 	for _, m := range _q.modifiers {
@@ -679,15 +679,15 @@ func (_q *CardQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // UseIndex hints which indexes to use.
-func (cq *CardQuery) UseIndex(idx ...string) *CardQuery {
-	cq.useIndex = append(cq.useIndex, idx...)
-	return cq
+func (_q *CardQuery) UseIndex(idx ...string) *CardQuery {
+	_q.useIndex = append(_q.useIndex, idx...)
+	return _q
 }
 
 // ForceIndex forces which indexes to use.
-func (cq *CardQuery) ForceIndex(idx ...string) *CardQuery {
-	cq.forceIndex = append(cq.forceIndex, idx...)
-	return cq
+func (_q *CardQuery) ForceIndex(idx ...string) *CardQuery {
+	_q.forceIndex = append(_q.forceIndex, idx...)
+	return _q
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

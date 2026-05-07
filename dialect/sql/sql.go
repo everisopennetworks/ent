@@ -9,8 +9,6 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect"
-
-	"entgo.io/ent/dialect"
 )
 
 // The following helpers exist to simplify the way raw predicates

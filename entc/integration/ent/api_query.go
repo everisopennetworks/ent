@@ -330,10 +330,10 @@ func (_q *APIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Api, err
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
-	if useIndex := aq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := aq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -353,10 +353,10 @@ func (_q *APIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Api, err
 
 func (_q *APIQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
-	if useIndex := aq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := aq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -424,10 +424,10 @@ func (_q *APIQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	if useIndex := aq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		t1.UseIndex(useIndex...)
 	}
-	if forceIndex := aq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		t1.ForceIndex(forceIndex...)
 	}
 	for _, m := range _q.modifiers {
@@ -451,15 +451,15 @@ func (_q *APIQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // UseIndex hints which indexes to use.
-func (aq *APIQuery) UseIndex(idx ...string) *APIQuery {
-	aq.useIndex = append(aq.useIndex, idx...)
-	return aq
+func (_q *APIQuery) UseIndex(idx ...string) *APIQuery {
+	_q.useIndex = append(_q.useIndex, idx...)
+	return _q
 }
 
 // ForceIndex forces which indexes to use.
-func (aq *APIQuery) ForceIndex(idx ...string) *APIQuery {
-	aq.forceIndex = append(aq.forceIndex, idx...)
-	return aq
+func (_q *APIQuery) ForceIndex(idx ...string) *APIQuery {
+	_q.forceIndex = append(_q.forceIndex, idx...)
+	return _q
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

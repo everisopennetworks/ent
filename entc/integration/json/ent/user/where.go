@@ -66,6 +66,11 @@ func TNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldT))
 }
 
+// TContainsFold applies the ContainsFold predicate on the "t" field.
+func TContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldT, v))
+}
+
 // URLIsNil applies the IsNil predicate on the "url" field.
 func URLIsNil() predicate.User {
 	return predicate.User(sql.FieldIsNull(FieldURL))
@@ -74,6 +79,11 @@ func URLIsNil() predicate.User {
 // URLNotNil applies the NotNil predicate on the "url" field.
 func URLNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldURL))
+}
+
+// URLContainsFold applies the ContainsFold predicate on the "url" field.
+func URLContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldURL, v))
 }
 
 // URLsIsNil applies the IsNil predicate on the "URLs" field.
@@ -86,6 +96,11 @@ func URLsNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldURLs))
 }
 
+// URLsContainsFold applies the ContainsFold predicate on the "URLs" field.
+func URLsContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldURLs, v))
+}
+
 // RawIsNil applies the IsNil predicate on the "raw" field.
 func RawIsNil() predicate.User {
 	return predicate.User(sql.FieldIsNull(FieldRaw))
@@ -94,6 +109,16 @@ func RawIsNil() predicate.User {
 // RawNotNil applies the NotNil predicate on the "raw" field.
 func RawNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldRaw))
+}
+
+// RawContainsFold applies the ContainsFold predicate on the "raw" field.
+func RawContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldRaw, v))
+}
+
+// DirsContainsFold applies the ContainsFold predicate on the "dirs" field.
+func DirsContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldDirs, v))
 }
 
 // IntsIsNil applies the IsNil predicate on the "ints" field.
@@ -106,6 +131,11 @@ func IntsNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldInts))
 }
 
+// IntsContainsFold applies the ContainsFold predicate on the "ints" field.
+func IntsContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldInts, v))
+}
+
 // FloatsIsNil applies the IsNil predicate on the "floats" field.
 func FloatsIsNil() predicate.User {
 	return predicate.User(sql.FieldIsNull(FieldFloats))
@@ -114,6 +144,11 @@ func FloatsIsNil() predicate.User {
 // FloatsNotNil applies the NotNil predicate on the "floats" field.
 func FloatsNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldFloats))
+}
+
+// FloatsContainsFold applies the ContainsFold predicate on the "floats" field.
+func FloatsContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldFloats, v))
 }
 
 // StringsIsNil applies the IsNil predicate on the "strings" field.
@@ -126,6 +161,11 @@ func StringsNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldStrings))
 }
 
+// StringsContainsFold applies the ContainsFold predicate on the "strings" field.
+func StringsContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldStrings, v))
+}
+
 // IntsValidateIsNil applies the IsNil predicate on the "ints_validate" field.
 func IntsValidateIsNil() predicate.User {
 	return predicate.User(sql.FieldIsNull(FieldIntsValidate))
@@ -134,6 +174,11 @@ func IntsValidateIsNil() predicate.User {
 // IntsValidateNotNil applies the NotNil predicate on the "ints_validate" field.
 func IntsValidateNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldIntsValidate))
+}
+
+// IntsValidateContainsFold applies the ContainsFold predicate on the "ints_validate" field.
+func IntsValidateContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldIntsValidate, v))
 }
 
 // FloatsValidateIsNil applies the IsNil predicate on the "floats_validate" field.
@@ -146,6 +191,11 @@ func FloatsValidateNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldFloatsValidate))
 }
 
+// FloatsValidateContainsFold applies the ContainsFold predicate on the "floats_validate" field.
+func FloatsValidateContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldFloatsValidate, v))
+}
+
 // StringsValidateIsNil applies the IsNil predicate on the "strings_validate" field.
 func StringsValidateIsNil() predicate.User {
 	return predicate.User(sql.FieldIsNull(FieldStringsValidate))
@@ -154,6 +204,11 @@ func StringsValidateIsNil() predicate.User {
 // StringsValidateNotNil applies the NotNil predicate on the "strings_validate" field.
 func StringsValidateNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldStringsValidate))
+}
+
+// StringsValidateContainsFold applies the ContainsFold predicate on the "strings_validate" field.
+func StringsValidateContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldStringsValidate, v))
 }
 
 // AddrIsNil applies the IsNil predicate on the "addr" field.
@@ -166,6 +221,11 @@ func AddrNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldAddr))
 }
 
+// AddrContainsFold applies the ContainsFold predicate on the "addr" field.
+func AddrContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldAddr, v))
+}
+
 // UnknownIsNil applies the IsNil predicate on the "unknown" field.
 func UnknownIsNil() predicate.User {
 	return predicate.User(sql.FieldIsNull(FieldUnknown))
@@ -174,6 +234,11 @@ func UnknownIsNil() predicate.User {
 // UnknownNotNil applies the NotNil predicate on the "unknown" field.
 func UnknownNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldUnknown))
+}
+
+// UnknownContainsFold applies the ContainsFold predicate on the "unknown" field.
+func UnknownContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsJSONFold(FieldUnknown, v))
 }
 
 // And groups predicates with the AND operator between them.

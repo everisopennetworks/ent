@@ -771,10 +771,10 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	if useIndex := uq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := uq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -1414,10 +1414,10 @@ func (_q *UserQuery) loadParent(ctx context.Context, query *UserQuery, nodes []*
 
 func (_q *UserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
-	if useIndex := uq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := uq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -1485,10 +1485,10 @@ func (_q *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	if useIndex := uq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		t1.UseIndex(useIndex...)
 	}
-	if forceIndex := uq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		t1.ForceIndex(forceIndex...)
 	}
 	for _, m := range _q.modifiers {
@@ -1512,15 +1512,15 @@ func (_q *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // UseIndex hints which indexes to use.
-func (uq *UserQuery) UseIndex(idx ...string) *UserQuery {
-	uq.useIndex = append(uq.useIndex, idx...)
-	return uq
+func (_q *UserQuery) UseIndex(idx ...string) *UserQuery {
+	_q.useIndex = append(_q.useIndex, idx...)
+	return _q
 }
 
 // ForceIndex forces which indexes to use.
-func (uq *UserQuery) ForceIndex(idx ...string) *UserQuery {
-	uq.forceIndex = append(uq.forceIndex, idx...)
-	return uq
+func (_q *UserQuery) ForceIndex(idx ...string) *UserQuery {
+	_q.forceIndex = append(_q.forceIndex, idx...)
+	return _q
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

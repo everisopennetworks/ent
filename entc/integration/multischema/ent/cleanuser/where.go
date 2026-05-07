@@ -71,6 +71,11 @@ func NameHasSuffix(v string) predicate.CleanUser {
 	return predicate.CleanUser(sql.FieldHasSuffix(FieldName, v))
 }
 
+// NameRegex applies the Regex predicate on the "name" field.
+func NameRegex(v string) predicate.CleanUser {
+	return predicate.CleanUser(sql.FieldRegex(FieldName, v))
+}
+
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.CleanUser {
 	return predicate.CleanUser(sql.FieldEqualFold(FieldName, v))

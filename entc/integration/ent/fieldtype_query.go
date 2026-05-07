@@ -357,10 +357,10 @@ func (_q *FieldTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Fi
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
-	if useIndex := ftq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := ftq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -380,10 +380,10 @@ func (_q *FieldTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Fi
 
 func (_q *FieldTypeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
-	if useIndex := ftq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := ftq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -451,10 +451,10 @@ func (_q *FieldTypeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	if useIndex := ftq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		t1.UseIndex(useIndex...)
 	}
-	if forceIndex := ftq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		t1.ForceIndex(forceIndex...)
 	}
 	for _, m := range _q.modifiers {
@@ -478,15 +478,15 @@ func (_q *FieldTypeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // UseIndex hints which indexes to use.
-func (ftq *FieldTypeQuery) UseIndex(idx ...string) *FieldTypeQuery {
-	ftq.useIndex = append(ftq.useIndex, idx...)
-	return ftq
+func (_q *FieldTypeQuery) UseIndex(idx ...string) *FieldTypeQuery {
+	_q.useIndex = append(_q.useIndex, idx...)
+	return _q
 }
 
 // ForceIndex forces which indexes to use.
-func (ftq *FieldTypeQuery) ForceIndex(idx ...string) *FieldTypeQuery {
-	ftq.forceIndex = append(ftq.forceIndex, idx...)
-	return ftq
+func (_q *FieldTypeQuery) ForceIndex(idx ...string) *FieldTypeQuery {
+	_q.forceIndex = append(_q.forceIndex, idx...)
+	return _q
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

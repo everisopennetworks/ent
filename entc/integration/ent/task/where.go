@@ -154,6 +154,11 @@ func PrioritiesNotNil() predicate.Task {
 	return predicate.Task(sql.FieldNotNull(FieldPriorities))
 }
 
+// PrioritiesContainsFold applies the ContainsFold predicate on the "priorities" field.
+func PrioritiesContainsFold(v string) predicate.Task {
+	return predicate.Task(sql.FieldContainsJSONFold(FieldPriorities, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Task {
 	return predicate.Task(sql.FieldEQ(FieldCreatedAt, v))
@@ -507,6 +512,11 @@ func OpHasPrefix(v string) predicate.Task {
 // OpHasSuffix applies the HasSuffix predicate on the "op" field.
 func OpHasSuffix(v string) predicate.Task {
 	return predicate.Task(sql.FieldHasSuffix(FieldOp, v))
+}
+
+// OpRegex applies the Regex predicate on the "op" field.
+func OpRegex(v string) predicate.Task {
+	return predicate.Task(sql.FieldRegex(FieldOp, v))
 }
 
 // OpEqualFold applies the EqualFold predicate on the "op" field.

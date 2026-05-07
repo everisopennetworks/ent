@@ -3557,6 +3557,11 @@ func StringsNotNil() predicate.FieldType {
 	return predicate.FieldType(sql.FieldNotNull(FieldStrings))
 }
 
+// StringsContainsFold applies the ContainsFold predicate on the "strings" field.
+func StringsContainsFold(v string) predicate.FieldType {
+	return predicate.FieldType(sql.FieldContainsJSONFold(FieldStrings, v))
+}
+
 // PairEQ applies the EQ predicate on the "pair" field.
 func PairEQ(v schema.Pair) predicate.FieldType {
 	return predicate.FieldType(sql.FieldEQ(FieldPair, v))

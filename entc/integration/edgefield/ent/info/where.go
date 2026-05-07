@@ -57,6 +57,11 @@ func IDLTE(id int) predicate.Info {
 	return predicate.Info(sql.FieldLTE(FieldID, id))
 }
 
+// ContentContainsFold applies the ContainsFold predicate on the "content" field.
+func ContentContainsFold(v string) predicate.Info {
+	return predicate.Info(sql.FieldContainsJSONFold(FieldContent, v))
+}
+
 // HasUser applies the HasEdge predicate on the "user" edge.
 func HasUser() predicate.Info {
 	return predicate.Info(func(s *sql.Selector) {

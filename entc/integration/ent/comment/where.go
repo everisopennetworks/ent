@@ -296,6 +296,11 @@ func DirNotNil() predicate.Comment {
 	return predicate.Comment(sql.FieldNotNull(FieldDir))
 }
 
+// DirContainsFold applies the ContainsFold predicate on the "dir" field.
+func DirContainsFold(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldContainsJSONFold(FieldDir, v))
+}
+
 // ClientEQ applies the EQ predicate on the "client" field.
 func ClientEQ(v string) predicate.Comment {
 	return predicate.Comment(sql.FieldEQ(FieldClient, v))

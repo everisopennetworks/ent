@@ -394,10 +394,10 @@ func (_q *GroupInfoQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Gr
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	if useIndex := giq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := giq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -473,10 +473,10 @@ func (_q *GroupInfoQuery) loadGroups(ctx context.Context, query *GroupQuery, nod
 
 func (_q *GroupInfoQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
-	if useIndex := giq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		_spec.UseIndex = useIndex
 	}
-	if forceIndex := giq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		_spec.ForceIndex = forceIndex
 	}
 	if len(_q.modifiers) > 0 {
@@ -544,10 +544,10 @@ func (_q *GroupInfoQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	if useIndex := giq.useIndex; len(useIndex) > 0 {
+	if useIndex := _q.useIndex; len(useIndex) > 0 {
 		t1.UseIndex(useIndex...)
 	}
-	if forceIndex := giq.forceIndex; len(forceIndex) > 0 {
+	if forceIndex := _q.forceIndex; len(forceIndex) > 0 {
 		t1.ForceIndex(forceIndex...)
 	}
 	for _, m := range _q.modifiers {
@@ -571,15 +571,15 @@ func (_q *GroupInfoQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // UseIndex hints which indexes to use.
-func (giq *GroupInfoQuery) UseIndex(idx ...string) *GroupInfoQuery {
-	giq.useIndex = append(giq.useIndex, idx...)
-	return giq
+func (_q *GroupInfoQuery) UseIndex(idx ...string) *GroupInfoQuery {
+	_q.useIndex = append(_q.useIndex, idx...)
+	return _q
 }
 
 // ForceIndex forces which indexes to use.
-func (giq *GroupInfoQuery) ForceIndex(idx ...string) *GroupInfoQuery {
-	giq.forceIndex = append(giq.forceIndex, idx...)
-	return giq
+func (_q *GroupInfoQuery) ForceIndex(idx ...string) *GroupInfoQuery {
+	_q.forceIndex = append(_q.forceIndex, idx...)
+	return _q
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

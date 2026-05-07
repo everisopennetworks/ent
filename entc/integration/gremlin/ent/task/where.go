@@ -683,6 +683,13 @@ func OpHasSuffix(v string) predicate.Task {
 	})
 }
 
+// OpRegex applies the Regex predicate on the "op" field.
+func OpRegex(v string) predicate.Task {
+	return predicate.Task(func(t *dsl.Traversal) {
+		t.Has(Label, FieldOp, p.Regex(v))
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Task) predicate.Task {
 	return predicate.Task(func(tr *dsl.Traversal) {
