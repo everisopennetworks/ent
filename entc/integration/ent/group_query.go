@@ -36,6 +36,8 @@ type GroupQuery struct {
 	withUsers        *UserQuery
 	withInfo         *GroupInfoQuery
 	withFKs          bool
+	useIndex         []string
+	forceIndex       []string
 	modifiers        []func(*sql.Selector)
 	withNamedFiles   map[string]*FileQuery
 	withNamedBlocked map[string]*UserQuery
@@ -512,6 +514,12 @@ func (_q *GroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Group,
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if useIndex := gq.useIndex; len(useIndex) > 0 {
+		_spec.UseIndex = useIndex
+	}
+	if forceIndex := gq.forceIndex; len(forceIndex) > 0 {
+		_spec.ForceIndex = forceIndex
+	}
 	if len(_q.modifiers) > 0 {
 		_spec.Modifiers = _q.modifiers
 	}
@@ -733,6 +741,12 @@ func (_q *GroupQuery) loadInfo(ctx context.Context, query *GroupInfoQuery, nodes
 
 func (_q *GroupQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
+	if useIndex := gq.useIndex; len(useIndex) > 0 {
+		_spec.UseIndex = useIndex
+	}
+	if forceIndex := gq.forceIndex; len(forceIndex) > 0 {
+		_spec.ForceIndex = forceIndex
+	}
 	if len(_q.modifiers) > 0 {
 		_spec.Modifiers = _q.modifiers
 	}
@@ -798,6 +812,12 @@ func (_q *GroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
+	if useIndex := gq.useIndex; len(useIndex) > 0 {
+		t1.UseIndex(useIndex...)
+	}
+	if forceIndex := gq.forceIndex; len(forceIndex) > 0 {
+		t1.ForceIndex(forceIndex...)
+	}
 	for _, m := range _q.modifiers {
 		m(selector)
 	}
@@ -816,6 +836,18 @@ func (_q *GroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// UseIndex hints which indexes to use.
+func (gq *GroupQuery) UseIndex(idx ...string) *GroupQuery {
+	gq.useIndex = append(gq.useIndex, idx...)
+	return gq
+}
+
+// ForceIndex forces which indexes to use.
+func (gq *GroupQuery) ForceIndex(idx ...string) *GroupQuery {
+	gq.forceIndex = append(gq.forceIndex, idx...)
+	return gq
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

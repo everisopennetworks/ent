@@ -36,7 +36,7 @@ in the LICENSE file in the root directory of this source tree.
 	{{- $op := $.Scope.Op -}}
 	{{- $arg := $.Scope.Arg -}}
 	{{- $storage := $.Scope.Storage -}}
-	sql.Field{{ call $storage.OpCode $op }}({{ $f.Constant }}{{ if not $op.Niladic }}, {{ $arg }}{{ if $op.Variadic }}...{{ end }}{{ end }})
+	sql.Field{{ call $storage.FieldOpCode $f $op }}({{ $f.Constant }}{{ if not $op.Niladic }}, {{ $arg }}{{ if $op.Variadic }}...{{ end }}{{ end }})
 {{- end }}
 
 {{ define "dialect/sql/predicate/edge/has" -}}

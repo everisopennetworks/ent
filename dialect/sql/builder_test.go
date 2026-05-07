@@ -1475,6 +1475,31 @@ AND "users"."id1" < "users"."id2") AND "users"."id1" <= "users"."id2"`, "\n", ""
 				From(Select("name", "age").From(Table("users"))),
 			wantQuery: "SELECT `name` FROM (SELECT `name`, `age` FROM `users`)",
 		},
+		{
+			input: Select("name").
+				From(Table("users").UseIndex("my_index")),
+			wantQuery: "SELECT `name` FROM `users` USE INDEX (`my_index`)",
+		},
+		{
+			input: Select("name").
+				From(Table("users").UseIndex("my_index1", "my_index2").UseIndex("my_index3")),
+			wantQuery: "SELECT `name` FROM `users` USE INDEX (`my_index1`, `my_index2`, `my_index3`)",
+		},
+		{
+			input: Select("name").
+				From(Table("users").ForceIndex("my_index")),
+			wantQuery: "SELECT `name` FROM `users` FORCE INDEX (`my_index`)",
+		},
+		{
+			input: Select("name").
+				From(Table("users").ForceIndex("my_index1", "my_index2").ForceIndex("my_index3")),
+			wantQuery: "SELECT `name` FROM `users` FORCE INDEX (`my_index1`, `my_index2`, `my_index3`)",
+		},
+		{
+			input: Select("name").
+				From(Table("users").UseIndex("my_index1", "my_index2").ForceIndex("my_index3")),
+			wantQuery: "SELECT `name` FROM `users` USE INDEX (`my_index1`, `my_index2`) FORCE INDEX (`my_index3`)",
+		},
 	}
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
@@ -2312,6 +2337,25 @@ func TestSelector_SelectedColumn(t *testing.T) {
 		s.Join(t2)
 		s.Select(t2.C("e"), "t2.e", s.C("e"), "t1.e", "e")
 		require.Equal(t, []string{`"t2"."e"`, "t2.e", `"t1"."e"`, "t1.e", "e"}, s.FindSelection("e"))
+	})
+}
+
+func TestColumnsRegex(t *testing.T) {
+	t.Run("MySQL", func(t *testing.T) {
+		query, _ := Dialect(dialect.MySQL).
+			Select("*").From(Table("t1")).Where(Regex("a", "b")).Query()
+		require.Equal(t, "SELECT * FROM `t1` WHERE `a` REGEX ?", query)
+	})
+	t.Run("Postgres", func(t *testing.T) {
+		query, _ := Dialect(dialect.Postgres).
+			Select("*").From(Table("t1")).Where(Regex("a", "b")).Query()
+		require.Equal(t, `SELECT * FROM "t1" WHERE "a" ~ $1`, query)
+	})
+	t.Run("SQLite", func(t *testing.T) {
+		query, args := Dialect(dialect.SQLite).
+			Select("*").From(Table("t1")).Where(Regex("a", "b")).Query()
+		require.Equal(t, "SELECT * FROM `t1` WHERE `a` REGEXP ?", query)
+		require.Equal(t, []any{`\`}, args)
 	})
 }
 

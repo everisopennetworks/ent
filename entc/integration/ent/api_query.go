@@ -27,6 +27,8 @@ type APIQuery struct {
 	order      []api.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Api
+	useIndex   []string
+	forceIndex []string
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -328,6 +330,12 @@ func (_q *APIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Api, err
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
+	if useIndex := aq.useIndex; len(useIndex) > 0 {
+		_spec.UseIndex = useIndex
+	}
+	if forceIndex := aq.forceIndex; len(forceIndex) > 0 {
+		_spec.ForceIndex = forceIndex
+	}
 	if len(_q.modifiers) > 0 {
 		_spec.Modifiers = _q.modifiers
 	}
@@ -345,6 +353,12 @@ func (_q *APIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Api, err
 
 func (_q *APIQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
+	if useIndex := aq.useIndex; len(useIndex) > 0 {
+		_spec.UseIndex = useIndex
+	}
+	if forceIndex := aq.forceIndex; len(forceIndex) > 0 {
+		_spec.ForceIndex = forceIndex
+	}
 	if len(_q.modifiers) > 0 {
 		_spec.Modifiers = _q.modifiers
 	}
@@ -410,6 +424,12 @@ func (_q *APIQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
+	if useIndex := aq.useIndex; len(useIndex) > 0 {
+		t1.UseIndex(useIndex...)
+	}
+	if forceIndex := aq.forceIndex; len(forceIndex) > 0 {
+		t1.ForceIndex(forceIndex...)
+	}
 	for _, m := range _q.modifiers {
 		m(selector)
 	}
@@ -428,6 +448,18 @@ func (_q *APIQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// UseIndex hints which indexes to use.
+func (aq *APIQuery) UseIndex(idx ...string) *APIQuery {
+	aq.useIndex = append(aq.useIndex, idx...)
+	return aq
+}
+
+// ForceIndex forces which indexes to use.
+func (aq *APIQuery) ForceIndex(idx ...string) *APIQuery {
+	aq.forceIndex = append(aq.forceIndex, idx...)
+	return aq
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

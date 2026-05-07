@@ -144,6 +144,13 @@ var (
 		Description: "Allows users to work with versioned migrations / migration files",
 	}
 
+	FeatureIndexHint = Feature{
+		Name:        "sql/indexhint",
+		Stage:       Experimental,
+		Default:     false,
+		Description: "Allows users to use USE INDEX or FORCE INDEX clause",
+	}
+
 	FeatureGlobalID = Feature{
 		Name:        "sql/globalid",
 		Stage:       Experimental,
@@ -173,6 +180,7 @@ var (
 		FeatureExecQuery,
 		FeatureUpsert,
 		FeatureVersionedMigration,
+		FeatureIndexHint,
 		FeatureGlobalID,
 	}
 	// allFeatures includes all public and private features.

@@ -53,6 +53,11 @@ func EndingWith(suffix string) *dsl.Traversal {
 	return op("endingWith", suffix)
 }
 
+// Regex is the match pattern string test predicate.
+func Regex(regex string) *dsl.Traversal {
+	return op("regex", regex)
+}
+
 // Containing is the sub string test predicate.
 func Containing(substr string) *dsl.Traversal {
 	return op("containing", substr)

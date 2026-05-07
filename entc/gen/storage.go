@@ -37,15 +37,16 @@ func (m SchemaMode) Support(mode SchemaMode) bool { return m&mode != 0 }
 
 // Storage driver type for codegen.
 type Storage struct {
-	Name       string             // storage name.
-	Builder    reflect.Type       // query builder type.
-	Dialects   []string           // supported dialects.
-	IdentName  string             // identifier name (fields and funcs).
-	Imports    []string           // import packages needed.
-	SchemaMode SchemaMode         // schema mode support.
-	Ops        func(*Field) []Op  // storage specific operations.
-	OpCode     func(Op) string    // operation code for predicates.
-	Init       func(*Graph) error // optional init function.
+	Name        string                  // storage name.
+	Builder     reflect.Type            // query builder type.
+	Dialects    []string                // supported dialects.
+	IdentName   string                  // identifier name (fields and funcs).
+	Imports     []string                // import packages needed.
+	SchemaMode  SchemaMode              // schema mode support.
+	Ops         func(*Field) []Op       // storage specific operations.
+	OpCode      func(Op) string         // operation code for predicates.
+	FieldOpCode func(*Field, Op) string // field operation code for predicates.
+	Init        func(*Graph) error      // optional init function.
 }
 
 // StorageDrivers holds the storage driver options for entc.
@@ -64,12 +65,21 @@ var drivers = []*Storage{
 		},
 		SchemaMode: Unique | Indexes | Cascade | Migrate,
 		Ops: func(f *Field) []Op {
+			if f.IsJSON() {
+				return []Op{ContainsFold}
+			}
 			if f.IsString() && f.ConvertedToBasic() {
 				return []Op{EqualFold, ContainsFold}
 			}
 			return nil
 		},
 		OpCode: opCodes(sqlCode[:]),
+		FieldOpCode: fieldOpCodes(sqlCode[:], func(f *Field, op Op) string {
+			if op == ContainsFold && f.IsJSON() {
+				return "ContainsJSONFold"
+			}
+			return ""
+		}),
 		Init: func(g *Graph) error {
 			var with, without []string
 			for _, n := range g.Nodes {
@@ -108,9 +118,10 @@ var drivers = []*Storage{
 			"entgo.io/ent/dialect/gremlin/graph/dsl/p",
 			"entgo.io/ent/dialect/gremlin/encoding/graphson",
 		},
-		SchemaMode: Unique,
-		OpCode:     opCodes(gremlinCode[:]),
-		Init:       func(*Graph) error { return nil }, // Noop.
+		SchemaMode:  Unique,
+		OpCode:      opCodes(gremlinCode[:]),
+		FieldOpCode: fieldOpCodes(gremlinCode[:], nil),
+		Init:        func(*Graph) error { return nil }, // Noop.
 	},
 }
 
@@ -153,6 +164,18 @@ func opCodes(codes []string) func(Op) string {
 			return codes[o]
 		}
 		return o.Name()
+	}
+}
+
+func fieldOpCodes(codes []string, override func(*Field, Op) string) func(*Field, Op) string {
+	defaultCode := opCodes(codes)
+	return func(f *Field, o Op) string {
+		if override != nil {
+			if code := override(f, o); code != "" {
+				return code
+			}
+		}
+		return defaultCode(o)
 	}
 }
 

@@ -426,6 +426,31 @@ func TestFieldContainsFold(t *testing.T) {
 	})
 }
 
+func TestFieldContainsJSONFold(t *testing.T) {
+	p := FieldContainsJSONFold("payload", "A8m")
+	t.Run("MySQL", func(t *testing.T) {
+		s := Dialect(dialect.MySQL).Select("*").From(Table("users"))
+		p(s)
+		query, args := s.Query()
+		require.Equal(t, "SELECT * FROM `users` WHERE LOWER(CAST(`users`.`payload` AS CHAR)) LIKE ?", query)
+		require.Equal(t, []any{"%a8m%"}, args)
+	})
+	t.Run("PostgreSQL", func(t *testing.T) {
+		s := Dialect(dialect.Postgres).Select("*").From(Table("users"))
+		p(s)
+		query, args := s.Query()
+		require.Equal(t, `SELECT * FROM "users" WHERE LOWER(CAST("users"."payload" AS text)) LIKE $1`, query)
+		require.Equal(t, []any{"%a8m%"}, args)
+	})
+	t.Run("SQLite", func(t *testing.T) {
+		s := Dialect(dialect.SQLite).Select("*").From(Table("users"))
+		p(s)
+		query, args := s.Query()
+		require.Equal(t, "SELECT * FROM `users` WHERE LOWER(CAST(`users`.`payload` AS TEXT)) LIKE ?", query)
+		require.Equal(t, []any{"%a8m%"}, args)
+	})
+}
+
 func TestAndPredicates(t *testing.T) {
 	s := Select("*").From(Table("users")).Where(EQ("name", "a8m"))
 	p := AndPredicates(

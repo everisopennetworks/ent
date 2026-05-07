@@ -434,3 +434,24 @@ and store this information alongside your generated code (`internal/globalid.go`
 range of `[1,4294967296)` for its IDs, and type `B` will have the range of `[4294967296,8589934592)`, etc.
 
 Note that if this option is enabled, the maximum number of possible tables is **65535**. 
+
+
+### Index Hints
+
+The `sql/indexhint` option allows users to add `USE INDEX` or `FORCE INDEX` clauses in SQL statements.
+
+This option can be added to a project using the `--feature sql/indexhint` flag.
+
+```go
+files, err := client.File.
+    Query().
+    Where(
+        file.NameEQ("example.txt"),
+        file.SizeGTE(1024),
+        file.SizeLTE(1048576),
+    ).
+    UseIndex("file_name_size").
+    All(ctx)
+
+// SELECT "id" FROM `files` USE INDEX `file_name_size` ...
+```

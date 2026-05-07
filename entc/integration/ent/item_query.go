@@ -27,6 +27,8 @@ type ItemQuery struct {
 	order      []item.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Item
+	useIndex   []string
+	forceIndex []string
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -350,6 +352,12 @@ func (_q *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
+	if useIndex := iq.useIndex; len(useIndex) > 0 {
+		_spec.UseIndex = useIndex
+	}
+	if forceIndex := iq.forceIndex; len(forceIndex) > 0 {
+		_spec.ForceIndex = forceIndex
+	}
 	if len(_q.modifiers) > 0 {
 		_spec.Modifiers = _q.modifiers
 	}
@@ -367,6 +375,12 @@ func (_q *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 
 func (_q *ItemQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
+	if useIndex := iq.useIndex; len(useIndex) > 0 {
+		_spec.UseIndex = useIndex
+	}
+	if forceIndex := iq.forceIndex; len(forceIndex) > 0 {
+		_spec.ForceIndex = forceIndex
+	}
 	if len(_q.modifiers) > 0 {
 		_spec.Modifiers = _q.modifiers
 	}
@@ -432,6 +446,12 @@ func (_q *ItemQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
+	if useIndex := iq.useIndex; len(useIndex) > 0 {
+		t1.UseIndex(useIndex...)
+	}
+	if forceIndex := iq.forceIndex; len(forceIndex) > 0 {
+		t1.ForceIndex(forceIndex...)
+	}
 	for _, m := range _q.modifiers {
 		m(selector)
 	}
@@ -450,6 +470,18 @@ func (_q *ItemQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// UseIndex hints which indexes to use.
+func (iq *ItemQuery) UseIndex(idx ...string) *ItemQuery {
+	iq.useIndex = append(iq.useIndex, idx...)
+	return iq
+}
+
+// ForceIndex forces which indexes to use.
+func (iq *ItemQuery) ForceIndex(idx ...string) *ItemQuery {
+	iq.forceIndex = append(iq.forceIndex, idx...)
+	return iq
 }
 
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being

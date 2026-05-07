@@ -1332,6 +1332,33 @@ func (p *Predicate) ContainsFold(col, substr string) *Predicate {
 	return p.escapedLikeFold(col, "%", substr, "%")
 }
 
+// Regex is a helper predicate that checks a pattern using the REGEX predicate.
+func Regex(col, pattern string) *Predicate { return P().Regex(col, pattern) }
+
+// Regex is a helper predicate that applies the REGEX predicate.
+func (p *Predicate) Regex(col, pattern string) *Predicate {
+	return p.Append(func(b *Builder) {
+		w, escaped := escape(pattern)
+		switch b.dialect {
+		case dialect.MySQL:
+			b.Ident(col).WriteString(" REGEXP ")
+			b.Arg(w)
+		case dialect.Postgres:
+			b.Ident(col).WriteString(" ~ ")
+			b.Arg(w)
+		default: // SQLite.
+			var f Func
+			f.SetDialect(b.dialect)
+			f.Ident(col)
+			b.WriteString(f.String()).WriteString(" REGEXP ")
+			b.Arg(w)
+			if escaped {
+				p.WriteString(" ESCAPE ").Arg("\\")
+			}
+		}
+	})
+}
+
 // CompositeGT returns a composite ">" predicate
 func CompositeGT(columns []string, args ...any) *Predicate {
 	return P().CompositeGT(columns, args...)
@@ -1579,10 +1606,12 @@ func (q *queryView) C(column string) string {
 // SelectTable is a table selector.
 type SelectTable struct {
 	Builder
-	as     string
-	name   string
-	schema string
-	quote  bool
+	as         string
+	name       string
+	schema     string
+	useIndex   []string
+	forceIndex []string
+	quote      bool
 }
 
 // Table returns a new table selector.
@@ -1602,6 +1631,18 @@ func (s *SelectTable) Schema(name string) *SelectTable {
 // As adds the AS clause to the table selector.
 func (s *SelectTable) As(alias string) *SelectTable {
 	s.as = alias
+	return s
+}
+
+// UseIndex adds the USE INDEX clause to the table selector.
+func (s *SelectTable) UseIndex(index ...string) *SelectTable {
+	s.useIndex = append(s.useIndex, index...)
+	return s
+}
+
+// ForceIndex adds the FORCE INDEX clause to the table selector.
+func (s *SelectTable) ForceIndex(index ...string) *SelectTable {
+	s.forceIndex = append(s.forceIndex, index...)
 	return s
 }
 
@@ -1647,6 +1688,18 @@ func (s *SelectTable) ref() string {
 	if s.as != "" {
 		b.WriteString(" AS ")
 		b.Ident(s.as)
+	}
+	if len(s.useIndex) != 0 {
+		b.WriteString(" USE INDEX ")
+		b.Wrap(func(b *Builder) {
+			b.IdentComma(s.useIndex...)
+		})
+	}
+	if len(s.forceIndex) != 0 {
+		b.WriteString(" FORCE INDEX ")
+		b.Wrap(func(b *Builder) {
+			b.IdentComma(s.forceIndex...)
+		})
 	}
 	return b.String()
 }

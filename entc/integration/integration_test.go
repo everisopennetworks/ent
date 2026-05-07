@@ -143,6 +143,7 @@ var (
 		Tx,
 		Lock,
 		Indexes,
+		IndexHint,
 		Types,
 		Clone,
 		EntQL,
