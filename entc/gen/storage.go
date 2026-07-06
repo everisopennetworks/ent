@@ -7,6 +7,7 @@ package gen
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"entgo.io/ent/dialect/gremlin/graph/dsl"
 	"entgo.io/ent/dialect/sql"
@@ -71,8 +72,17 @@ var drivers = []*Storage{
 		},
 		OpCode: opCodes(sqlCode[:]),
 		FieldOpCode: fieldOpCodes(sqlCode[:], func(f *Field, op Op) string {
-			if op == ContainsFold && f.IsJSON() {
-				return "ContainsJSONFold"
+			if op == ContainsFold {
+				if f.IsJSON() {
+					return "ContainsJSONFold"
+				}
+				if f.def != nil {
+					for _, t := range f.def.SchemaType {
+						if strings.Contains(strings.ToLower(t), "json") {
+							return "ContainsJSONFold"
+						}
+					}
+				}
 			}
 			return ""
 		}),

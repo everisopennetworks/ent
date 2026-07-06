@@ -1268,6 +1268,20 @@ func (f Field) IsTime() bool { return f.Type != nil && f.Type.Type == field.Type
 // IsJSON returns true if the field is a JSON field.
 func (f Field) IsJSON() bool { return f.Type != nil && f.Type.Type == field.TypeJSON }
 
+// SchemaTypeHasJSON reports whether the field has a SchemaType that
+// indicates a JSON type (e.g. "json" or "jsonb").
+func (f Field) SchemaTypeHasJSON() bool {
+	if f.def == nil || len(f.def.SchemaType) == 0 {
+		return false
+	}
+	for _, t := range f.def.SchemaType {
+		if strings.Contains(strings.ToLower(t), "json") {
+			return true
+		}
+	}
+	return false
+}
+
 // IsOther returns true if the field is an Other field.
 func (f Field) IsOther() bool { return f.Type != nil && f.Type.Type == field.TypeOther }
 

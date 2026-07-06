@@ -76,7 +76,7 @@ in the LICENSE file in the root directory of this source tree.
 	{{ range $op := $f.Ops }}
 		{{ $arg := "v" }}{{ if $op.Variadic }}{{ $arg = "vs" }}{{ end }}
 		{{ $stringOp := eq $op.Name "EqualFold" "Contains" "ContainsFold" "HasPrefix" "HasSuffix" "Regex" }}
-		{{ $jsonStringOp := and $f.IsJSON (eq $op.Name "ContainsFold") }}
+		{{ $jsonStringOp := and (or $f.IsJSON $f.SchemaTypeHasJSON) (eq $op.Name "ContainsFold") }}
 		{{ $func := print $f.StructField $op.Name }}
 		{{ $type := $f.Type.String }}{{ if $f.IsEnum }}{{ $type = trimPackage $type $.Package }}{{ end }}{{ if $jsonStringOp }}{{ $type = "string" }}{{ end }}
 		// {{ $func }} applies the {{ $op.Name }} predicate on the {{ quote $f.Name }} field.
