@@ -246,6 +246,10 @@ func (d *MySQL) atIncrementT(t *schema.Table, v int64) {
 	}
 }
 
+// atIndexType is a no-op for MySQL: its default index type (BTREE) already
+// matches what Atlas assumes, so nothing needs to be forced.
+func (d *MySQL) atIndexType(*schema.Index) {}
+
 func (d *MySQL) atImplicitIndexName(idx *Index, c1 *Column) bool {
 	if idx.Name == c1.Name {
 		return true

@@ -547,6 +547,7 @@ type atBuilder interface {
 	atIncrementC(*schema.Table, *schema.Column)
 	atIncrementT(*schema.Table, int64)
 	atIndex(*Index, *schema.Table, *schema.Index) error
+	atIndexType(*schema.Index)
 	atTypeRangeSQL(t ...string) string
 }
 
@@ -1057,6 +1058,7 @@ func (a *Atlas) aIndexes(et *Table, at *schema.Table) error {
 	// CreateFunc might clear the primary keys.
 	if len(pk) > 0 {
 		at.SetPrimaryKey(schema.NewPrimaryKey(pk...))
+		a.sqlDialect.atIndexType(at.PrimaryKey)
 	}
 	// Rest of indexes.
 	for _, idx1 := range et.Indexes {
@@ -1069,6 +1071,7 @@ func (a *Atlas) aIndexes(et *Table, at *schema.Table) error {
 		for _, p := range idx2.Parts {
 			p.Desc = desc[p.C.Name]
 		}
+		a.sqlDialect.atIndexType(idx2)
 		at.AddIndexes(idx2)
 	}
 	return nil

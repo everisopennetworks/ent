@@ -164,7 +164,9 @@ func (d *Postgres) atUniqueC(t1 *Table, c1 *Column, t2 *schema.Table, c2 *schema
 			return
 		}
 	}
-	t2.AddIndexes(schema.NewUniqueIndex(fmt.Sprintf("%s_%s_key", t1.Name, c1.Name)).AddColumns(c2))
+	idx := schema.NewUniqueIndex(fmt.Sprintf("%s_%s_key", t1.Name, c1.Name)).AddColumns(c2)
+	d.atIndexType(idx)
+	t2.AddIndexes(idx)
 }
 
 func (d *Postgres) atImplicitIndexName(idx *Index, t1 *Table, c1 *Column) bool {
@@ -194,6 +196,49 @@ func (d *Postgres) atIncrementC(t *schema.Table, c *schema.Column) {
 
 func (d *Postgres) atIncrementT(t *schema.Table, v int64) {
 	t.AddAttrs(&postgres.Identity{Sequence: &postgres.Sequence{Start: v}})
+}
+
+// yugabyteIndexTypeSubstitutions maps the index access method ent/atlas would
+// otherwise request or assume to the one YugabyteDB actually creates.
+// YugabyteDB silently substitutes access methods it doesn't natively support
+// or default to with its own -- e.g. a plain index/primary key with no
+// explicit method (or an explicit BTREE/HASH) is always backed by its native
+// LSM storage engine, and an explicit GIN index is always created as YBGIN.
+// The empty-string key covers the "no IndexType attribute present" case,
+// which Atlas otherwise assumes to be BTREE.
+var yugabyteIndexTypeSubstitutions = map[string]string{
+	"":      "lsm",
+	"BTREE": "lsm",
+	"HASH":  "lsm",
+	"GIN":   "ybgin",
+}
+
+// atIndexType rewrites an index's (or a primary key's, which Atlas treats as
+// an index) access method to the one YugabyteDB actually creates, so the
+// "desired" schema atlas diffs against the live database describes reality
+// instead of what was requested. Without this, every affected index/primary
+// key looks "changed" on every single migration run -- inspecting the live
+// database reports what Yugabyte actually created (e.g. LSM), while ent's
+// desired schema described what was requested/assumed (e.g. BTREE) -- and
+// that produced a perpetual, spurious DROP+ADD PRIMARY KEY / DROP+CREATE
+// INDEX plan for every table, regardless of whether the schema had actually
+// changed.
+func (d *Postgres) atIndexType(idx *schema.Index) {
+	if idx == nil {
+		return
+	}
+	var current string
+	for _, a := range idx.Attrs {
+		if t, ok := a.(*postgres.IndexType); ok {
+			current = strings.ToUpper(t.T)
+		}
+	}
+	want, ok := yugabyteIndexTypeSubstitutions[current]
+	if !ok || want == current {
+		return
+	}
+	idx.Attrs = removeAttr(idx.Attrs, reflect.TypeOf(&postgres.IndexType{}))
+	idx.AddAttrs(&postgres.IndexType{T: want})
 }
 
 // indexOpClass returns a map holding the operator-class mapping if exists.
