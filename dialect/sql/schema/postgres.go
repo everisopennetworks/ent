@@ -23,8 +23,9 @@ import (
 // Postgres adapter for Atlas migration engine.
 type Postgres struct {
 	dialect.Driver
-	schema  string
-	version string
+	schema   string
+	version  string
+	yugabyte bool
 }
 
 // init loads the Postgres version from the database for later use in the migration process.
@@ -37,16 +38,24 @@ func (d *Postgres) init(ctx context.Context) error {
 	if err := d.Query(ctx, "SHOW server_version_num", []any{}, rows); err != nil {
 		return fmt.Errorf("querying server version %w", err)
 	}
-	defer rows.Close()
 	if !rows.Next() {
-		if err := rows.Err(); err != nil {
+		err := rows.Err()
+		rows.Close()
+		if err != nil {
 			return err
 		}
 		return fmt.Errorf("server_version_num variable was not found")
 	}
 	var version string
-	if err := rows.Scan(&version); err != nil {
-		return fmt.Errorf("scanning version: %w", err)
+	scanErr := rows.Scan(&version)
+	// Close before running any further queries on the same connection/transaction:
+	// leaving rows open while issuing another query on the same *sql.Tx corrupts the
+	// next result set (silently returns zero rows) on drivers like lib/pq.
+	if err := rows.Close(); err != nil {
+		return fmt.Errorf("closing rows: %w", err)
+	}
+	if scanErr != nil {
+		return fmt.Errorf("scanning version: %w", scanErr)
 	}
 	if len(version) < 6 {
 		return fmt.Errorf("malformed version: %s", version)
@@ -55,7 +64,28 @@ func (d *Postgres) init(ctx context.Context) error {
 	if compareVersions(d.version, "10.0.0") == -1 {
 		return fmt.Errorf("unsupported postgres version: %s", d.version)
 	}
-	return nil
+	return d.initYugabyte(ctx)
+}
+
+// initYugabyte detects whether the connected server is YugabyteDB by probing
+// for its "pg_yb_catalog_version" system catalog, which exists only on YSQL
+// (Yugabyte's Postgres-compatible API) and is absent on stock Postgres and
+// other wire-compatible databases (e.g. pgEdge). The result gates
+// atIndexType, which otherwise would assume every Postgres target silently
+// rewrites index access methods the way YugabyteDB does.
+func (d *Postgres) initYugabyte(ctx context.Context) error {
+	rows := &sql.Rows{}
+	if err := d.Query(ctx, "SELECT to_regclass('pg_catalog.pg_yb_catalog_version') IS NOT NULL", []any{}, rows); err != nil {
+		return fmt.Errorf("detecting yugabyte: %w", err)
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		if err := rows.Err(); err != nil {
+			return err
+		}
+		return fmt.Errorf("yugabyte detection query returned no rows")
+	}
+	return rows.Scan(&d.yugabyte)
 }
 
 // tableExist checks if a table exists in the database and current schema.
@@ -223,8 +253,12 @@ var yugabyteIndexTypeSubstitutions = map[string]string{
 // that produced a perpetual, spurious DROP+ADD PRIMARY KEY / DROP+CREATE
 // INDEX plan for every table, regardless of whether the schema had actually
 // changed.
+//
+// Only applies when d.yugabyte was set by initYugabyte: "lsm"/"ybgin" are
+// YSQL-only access methods, so on any other Postgres-wire-compatible target
+// (stock Postgres, pgEdge, ...) this substitution must stay a no-op.
 func (d *Postgres) atIndexType(idx *schema.Index) {
-	if idx == nil {
+	if idx == nil || !d.yugabyte {
 		return
 	}
 	var current string
@@ -239,6 +273,31 @@ func (d *Postgres) atIndexType(idx *schema.Index) {
 	}
 	idx.Attrs = removeAttr(idx.Attrs, reflect.TypeOf(&postgres.IndexType{}))
 	idx.AddAttrs(&postgres.IndexType{T: want})
+}
+
+// atExistingPrimaryKeyType applies atIndexType to a table's desired primary
+// key only when that table already exists in the live database.
+//
+// PostgreSQL's (and YugabyteDB's) CREATE TABLE grammar has no USING clause
+// for an inline PRIMARY KEY constraint, so forcing an explicit access method
+// (e.g. "lsm") onto the primary key of a table that is about to be created
+// produces invalid DDL ("PRIMARY KEY USING lsm (...)"). It's only needed to
+// keep the diff engine from treating an existing table's primary key as
+// changed on every run (see atIndexType); a freshly created table doesn't
+// need it; YugabyteDB always backs the primary key with lsm regardless of
+// what (if anything) is requested.
+func (d *Postgres) atExistingPrimaryKeyType(current, desired *schema.Schema) {
+	if !d.yugabyte {
+		return
+	}
+	for _, t2 := range desired.Tables {
+		if t2.PrimaryKey == nil {
+			continue
+		}
+		if _, ok := current.Table(t2.Name); ok {
+			d.atIndexType(t2.PrimaryKey)
+		}
+	}
 }
 
 // indexOpClass returns a map holding the operator-class mapping if exists.

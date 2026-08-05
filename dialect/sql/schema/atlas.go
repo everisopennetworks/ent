@@ -548,6 +548,7 @@ type atBuilder interface {
 	atIncrementT(*schema.Table, int64)
 	atIndex(*Index, *schema.Table, *schema.Index) error
 	atIndexType(*schema.Index)
+	atExistingPrimaryKeyType(current, desired *schema.Schema)
 	atTypeRangeSQL(t ...string) string
 }
 
@@ -766,6 +767,15 @@ func (a *Atlas) planReplay(ctx context.Context, name string, tables []*Table) (*
 }
 
 func (a *Atlas) diff(ctx context.Context, name string, current, desired *schema.Schema, newTypes []string, opts ...migrate.PlanOption) (*migrate.Plan, error) {
+	// Only align the desired primary key's access method with the dialect's
+	// own preference (e.g. YugabyteDB's lsm) for tables that already exist:
+	// that's needed to stop the diff engine from seeing a spurious change on
+	// every run (see atIndexType). A brand-new table's PRIMARY KEY constraint
+	// has no DDL syntax for an explicit access method, so this must stay
+	// unset when the table is about to be created.
+	if a.sqlDialect != nil {
+		a.sqlDialect.atExistingPrimaryKeyType(current, desired)
+	}
 	changes, err := (&diffDriver{a.atDriver, a.diffHooks}).SchemaDiff(current, desired, a.diffOptions...)
 	if err != nil {
 		return nil, err
@@ -1058,7 +1068,6 @@ func (a *Atlas) aIndexes(et *Table, at *schema.Table) error {
 	// CreateFunc might clear the primary keys.
 	if len(pk) > 0 {
 		at.SetPrimaryKey(schema.NewPrimaryKey(pk...))
-		a.sqlDialect.atIndexType(at.PrimaryKey)
 	}
 	// Rest of indexes.
 	for _, idx1 := range et.Indexes {

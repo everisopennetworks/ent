@@ -6,6 +6,7 @@ package schema
 
 import (
 	"context"
+	stdsql "database/sql"
 	"fmt"
 	"math"
 	"reflect"
@@ -44,11 +45,26 @@ func (d *MySQL) init(ctx context.Context) error {
 		}
 		return fmt.Errorf("mysql: version variable was not found")
 	}
-	version := make([]string, 2)
-	if err := rows.Scan(&version[0], &version[1]); err != nil {
+	// Some MySQL-wire-compatible databases (e.g. Doris) return more columns
+	// than vanilla MySQL/MariaDB for "SHOW VARIABLES LIKE 'version'" (which
+	// only returns Variable_name and Value). Size the scan destination to
+	// whatever the driver actually reports instead of assuming exactly 2.
+	columns, err := rows.Columns()
+	if err != nil {
+		return fmt.Errorf("mysql: reading version columns: %w", err)
+	}
+	if len(columns) < 2 {
+		return fmt.Errorf("mysql: unexpected number of columns for version variable: %d", len(columns))
+	}
+	version := make([]stdsql.NullString, len(columns))
+	scanArgs := make([]any, len(columns))
+	for i := range version {
+		scanArgs[i] = &version[i]
+	}
+	if err := rows.Scan(scanArgs...); err != nil {
 		return fmt.Errorf("mysql: scanning mysql version: %w", err)
 	}
-	d.version = version[1]
+	d.version = version[1].String
 	return nil
 }
 
@@ -249,6 +265,9 @@ func (d *MySQL) atIncrementT(t *schema.Table, v int64) {
 // atIndexType is a no-op for MySQL: its default index type (BTREE) already
 // matches what Atlas assumes, so nothing needs to be forced.
 func (d *MySQL) atIndexType(*schema.Index) {}
+
+// atExistingPrimaryKeyType is a no-op for MySQL: see atIndexType.
+func (d *MySQL) atExistingPrimaryKeyType(current, desired *schema.Schema) {}
 
 func (d *MySQL) atImplicitIndexName(idx *Index, c1 *Column) bool {
 	if idx.Name == c1.Name {

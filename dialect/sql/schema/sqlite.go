@@ -187,6 +187,9 @@ func (d *SQLite) atIncrementT(t *schema.Table, v int64) {
 // access methods, so nothing needs to be forced.
 func (d *SQLite) atIndexType(*schema.Index) {}
 
+// atExistingPrimaryKeyType is a no-op for SQLite: see atIndexType.
+func (d *SQLite) atExistingPrimaryKeyType(current, desired *schema.Schema) {}
+
 func (d *SQLite) atIndex(idx1 *Index, t2 *schema.Table, idx2 *schema.Index) error {
 	for _, c1 := range idx1.Columns {
 		c2, ok := t2.Column(c1.Name)

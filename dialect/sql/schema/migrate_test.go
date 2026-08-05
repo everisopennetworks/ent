@@ -35,6 +35,8 @@ func TestMigrate_SchemaName(t *testing.T) {
 	require.NoError(t, err)
 	mk.ExpectQuery(escape("SHOW server_version_num")).
 		WillReturnRows(sqlmock.NewRows([]string{"server_version_num"}).AddRow("130000"))
+	mk.ExpectQuery(escape("SELECT to_regclass('pg_catalog.pg_yb_catalog_version') IS NOT NULL")).
+		WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(false))
 	mk.ExpectQuery(escape("SELECT current_setting('server_version_num'), current_setting('default_table_access_method', true), current_setting('crdb_version', true)")).
 		WillReturnRows(sqlmock.NewRows([]string{"current_setting", "current_setting", "current_setting"}).AddRow("130000", "heap", ""))
 	mk.ExpectQuery("SELECT nspname AS schema_name,.+").
@@ -54,6 +56,8 @@ func TestMigrate_SchemaName(t *testing.T) {
 	// Without schema name the CURRENT_SCHEMA is used.
 	mk.ExpectQuery(escape("SHOW server_version_num")).
 		WillReturnRows(sqlmock.NewRows([]string{"server_version_num"}).AddRow("130000"))
+	mk.ExpectQuery(escape("SELECT to_regclass('pg_catalog.pg_yb_catalog_version') IS NOT NULL")).
+		WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(false))
 	mk.ExpectQuery(escape("SELECT current_setting('server_version_num'), current_setting('default_table_access_method', true), current_setting('crdb_version', true)")).
 		WillReturnRows(sqlmock.NewRows([]string{"current_setting", "current_setting", "current_setting"}).AddRow("130000", "heap", ""))
 	mk.ExpectQuery("SELECT nspname AS schema_name,.+CURRENT_SCHEMA().+").
