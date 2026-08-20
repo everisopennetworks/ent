@@ -286,6 +286,12 @@ func (d *Postgres) atIndexType(idx *schema.Index) {
 // changed on every run (see atIndexType); a freshly created table doesn't
 // need it; YugabyteDB always backs the primary key with lsm regardless of
 // what (if anything) is requested.
+//
+// A table that already exists but has no primary key yet (e.g. one restored
+// from a dump that didn't include it) is treated the same as a table being
+// created: forcing "lsm" onto the desired PK there would make the generated
+// DDL an ALTER TABLE ... ADD PRIMARY KEY USING lsm (...), which hits the
+// same "no USING clause allowed" restriction as the CREATE TABLE case above.
 func (d *Postgres) atExistingPrimaryKeyType(current, desired *schema.Schema) {
 	if !d.yugabyte {
 		return
@@ -294,9 +300,11 @@ func (d *Postgres) atExistingPrimaryKeyType(current, desired *schema.Schema) {
 		if t2.PrimaryKey == nil {
 			continue
 		}
-		if _, ok := current.Table(t2.Name); ok {
-			d.atIndexType(t2.PrimaryKey)
+		t1, ok := current.Table(t2.Name)
+		if !ok || t1.PrimaryKey == nil {
+			continue
 		}
+		d.atIndexType(t2.PrimaryKey)
 	}
 }
 
