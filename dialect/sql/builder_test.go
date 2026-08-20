@@ -976,7 +976,7 @@ func TestBuilder(t *testing.T) {
 				Select().
 				From(Table("users")).
 				Where(Or(EqualFold("name", "BAR"), EqualFold("name", "BAZ"))),
-			wantQuery: "SELECT * FROM `users` WHERE `name` COLLATE utf8mb4_general_ci = ? OR `name` COLLATE utf8mb4_general_ci = ?",
+			wantQuery: "SELECT * FROM `users` WHERE LOWER(`name`) = ? OR LOWER(`name`) = ?",
 			wantArgs:  []any{"bar", "baz"},
 		},
 		{
@@ -1000,7 +1000,7 @@ func TestBuilder(t *testing.T) {
 				Select().
 				From(Table("users")).
 				Where(And(ContainsFold("name", "Ariel"), ContainsFold("nick", "Bar"))),
-			wantQuery: "SELECT * FROM `users` WHERE `name` COLLATE utf8mb4_general_ci LIKE ? AND `nick` COLLATE utf8mb4_general_ci LIKE ?",
+			wantQuery: "SELECT * FROM `users` WHERE LOWER(`name`) LIKE ? AND LOWER(`nick`) LIKE ?",
 			wantArgs:  []any{"%ariel%", "%bar%"},
 		},
 		{
@@ -1992,7 +1992,7 @@ func TestEscapePatterns(t *testing.T) {
 			),
 		).
 		Query()
-	require.Equal(t, "UPDATE `users` SET `name` = NULL WHERE `nickname` LIKE ? OR `nickname` LIKE ? OR `nickname` LIKE ? OR `nickname` COLLATE utf8mb4_general_ci LIKE ?", q)
+	require.Equal(t, "UPDATE `users` SET `name` = NULL WHERE `nickname` LIKE ? OR `nickname` LIKE ? OR `nickname` LIKE ? OR LOWER(`nickname`) LIKE ?", q)
 	require.Equal(t, []any{"\\%a8m\\%%", "%\\_alexsn\\_", "%\\\\pedro\\\\%", "%\\%abcd\\%efg%"}, args)
 
 	q, args = Dialect(dialect.SQLite).

@@ -1206,21 +1206,21 @@ func (p *Predicate) escapedLikeFold(col, left, substr, right string) *Predicate 
 	return p.Append(func(b *Builder) {
 		w, escaped := escape(substr)
 		switch b.dialect {
-		case dialect.MySQL:
-			// We assume the CHARACTER SET is configured to utf8mb4,
-			// because this how it is defined in dialect/sql/schema.
-			b.Ident(col).WriteString(" COLLATE utf8mb4_general_ci LIKE ")
-			b.Arg(left + strings.ToLower(w) + right)
 		case dialect.Postgres:
 			b.Ident(col).WriteString(" ILIKE ")
 			b.Arg(left + strings.ToLower(w) + right)
-		default: // SQLite.
+		default: // MySQL and SQLite.
+			// Fold case explicitly with LOWER(...) instead of relying on
+			// "COLLATE utf8mb4_general_ci": MySQL-protocol-compatible engines
+			// used as read replicas (e.g. Doris) do not honor that collation
+			// for case-insensitive comparisons, which silently turns this
+			// into a case-sensitive match against the lower-cased argument.
 			var f Func
 			f.SetDialect(b.dialect)
 			f.Lower(col)
 			b.WriteString(f.String()).WriteString(" LIKE ")
 			b.Arg(left + strings.ToLower(w) + right)
-			if escaped {
+			if b.dialect == dialect.SQLite && escaped {
 				p.WriteString(" ESCAPE ").Arg("\\")
 			}
 		}
@@ -1298,16 +1298,16 @@ func (p *Predicate) EqualFold(col, sub string) *Predicate {
 		f := &Func{}
 		f.SetDialect(b.dialect)
 		switch b.dialect {
-		case dialect.MySQL:
-			// We assume the CHARACTER SET is configured to utf8mb4,
-			// because this how it is defined in dialect/sql/schema.
-			b.Ident(col).WriteString(" COLLATE utf8mb4_general_ci = ")
-			b.Arg(strings.ToLower(sub))
 		case dialect.Postgres:
 			b.Ident(col).WriteString(" ILIKE ")
 			w, _ := escape(sub)
 			b.Arg(strings.ToLower(w))
-		default: // SQLite.
+		default: // MySQL and SQLite.
+			// Fold case explicitly with LOWER(...) instead of relying on
+			// "COLLATE utf8mb4_general_ci": MySQL-protocol-compatible engines
+			// used as read replicas (e.g. Doris) do not honor that collation
+			// for case-insensitive comparisons, which silently turns this
+			// into a case-sensitive match against the lower-cased argument.
 			f.Lower(col)
 			b.WriteString(f.String())
 			b.WriteOp(OpEQ)

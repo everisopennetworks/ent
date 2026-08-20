@@ -306,7 +306,7 @@ func TestFieldEqualFold(t *testing.T) {
 		s := Dialect(dialect.MySQL).Select("*").From(Table("users"))
 		p(s)
 		query, args := s.Query()
-		require.Equal(t, "SELECT * FROM `users` WHERE `users`.`name` COLLATE utf8mb4_general_ci = ?", query)
+		require.Equal(t, "SELECT * FROM `users` WHERE LOWER(`users`.`name`) = ?", query)
 		require.Equal(t, []any{"a8m"}, args)
 	})
 	t.Run("PostgreSQL", func(t *testing.T) {
@@ -342,7 +342,7 @@ func TestFieldHasPrefixFold(t *testing.T) {
 		s := Dialect(dialect.MySQL).Select("*").From(Table("users"))
 		p(s)
 		query, args := s.Query()
-		require.Equal(t, "SELECT * FROM `users` WHERE `users`.`name` COLLATE utf8mb4_general_ci LIKE ?", query)
+		require.Equal(t, "SELECT * FROM `users` WHERE LOWER(`users`.`name`) LIKE ?", query)
 		require.Equal(t, []any{"a8m%"}, args)
 	})
 	t.Run("PostgreSQL", func(t *testing.T) {
@@ -378,7 +378,7 @@ func TestFieldHasSuffixFold(t *testing.T) {
 		s := Dialect(dialect.MySQL).Select("*").From(Table("users"))
 		p(s)
 		query, args := s.Query()
-		require.Equal(t, "SELECT * FROM `users` WHERE `users`.`name` COLLATE utf8mb4_general_ci LIKE ?", query)
+		require.Equal(t, "SELECT * FROM `users` WHERE LOWER(`users`.`name`) LIKE ?", query)
 		require.Equal(t, []any{"%a8m"}, args)
 	})
 	t.Run("PostgreSQL", func(t *testing.T) {
@@ -414,7 +414,7 @@ func TestFieldContainsFold(t *testing.T) {
 		s := Dialect(dialect.MySQL).Select("*").From(Table("users"))
 		p(s)
 		query, args := s.Query()
-		require.Equal(t, "SELECT * FROM `users` WHERE `users`.`name` COLLATE utf8mb4_general_ci LIKE ?", query)
+		require.Equal(t, "SELECT * FROM `users` WHERE LOWER(`users`.`name`) LIKE ?", query)
 		require.Equal(t, []any{"%a8m%"}, args)
 	})
 	t.Run("PostgreSQL", func(t *testing.T) {
